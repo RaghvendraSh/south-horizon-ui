@@ -1,0 +1,36 @@
+@use "abstracts" as *;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  @include use-ranade-font(400);
+}
+
+img {
+  max-width: 100%;
+}
+
+input,
+textarea,
+button,
+select,
+a,
+img,
+label,
+div,
+p {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // justify-content: center;
+  min-height: 100vh;
+  background-color: var(--background-color);
+}

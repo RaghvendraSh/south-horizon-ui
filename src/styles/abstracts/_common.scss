@@ -1,0 +1,224 @@
+:root {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // Header Colors
+  --header-bg: #ffffff;
+  --header-border: #e5e7eb;
+  --header-shadow: rgba(0, 0, 0, 0.1);
+
+  // Text Colors
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --text-white: #ffffff;
+
+  // Interactive Colors
+  --hover-bg: #f9fafb;
+  --border-light: #f3f4f6;
+
+  // Accent Colors
+  --accent-red: #f00a0c;
+
+  // Background Colors
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+}
+
+$ranade-fonts: (
+  100: "Thin",
+  300: "Light",
+  400: "Regular",
+  500: "Medium",
+  700: "Bold",
+);
+
+$ranade-font-path: "../../assets/fonts/";
+
+// Font size scales and breakpoints
+$font-size-base: 1rem; // 16px
+$font-size-scale: 1.25; // Major third scale
+$breakpoints: (
+  xs: 320px,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+
+// Font size map for different sizes
+$font-sizes: (
+  xs: 0.75rem,
+  // 12px
+  sm: 0.875rem,
+  // 14px
+  base: 1rem,
+  // 16px
+  lg: 1.125rem,
+  // 18px
+  xl: 1.25rem,
+  // 20px
+  2xl: 1.5rem,
+  // 24px
+  3xl: 1.875rem,
+  // 30px
+  4xl: 2.25rem,
+  // 36px
+  5xl: 3rem,
+  // 48px
+  6xl: 3.75rem,
+  // 60px
+  7xl: 4.5rem,
+  // 72px
+  8xl: 6rem,
+  // 96px
+  9xl: 8rem // 128px,,,,,,,,
+);
+
+// Mixin to include the Ranade font with different weights
+@mixin ranade-font($weight, $style: normal) {
+  $suffix: map-get($ranade-fonts, $weight);
+  @if $suffix {
+    @font-face {
+      font-family: "Ranade";
+      font-style: $style;
+      font-weight: $weight;
+      src: local("Ranade #{$suffix}"),
+        url("#{$ranade-font-path}Ranade-#{$suffix}.woff") format("woff");
+    }
+  }
+}
+
+// Mixin to apply Ranade font family with specific weight
+@mixin use-ranade-font($weight: 400) {
+  font-family: "Ranade", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-weight: $weight;
+}
+
+// Load all Ranade font weights
+@include ranade-font(100);
+@include ranade-font(300);
+@include ranade-font(400);
+@include ranade-font(500);
+@include ranade-font(700);
+
+// Function to get font size from the map
+@function font-size($size) {
+  @return map-get($font-sizes, $size);
+}
+
+// Function to calculate fluid font size between two breakpoints
+@function fluid-font-size(
+  $min-size,
+  $max-size,
+  $min-width: 320px,
+  $max-width: 1200px
+) {
+  $min-size-rem: if(
+    unit($min-size) == "px",
+    $min-size / 16px * 1rem,
+    $min-size
+  );
+  $max-size-rem: if(
+    unit($max-size) == "px",
+    $max-size / 16px * 1rem,
+    $max-size
+  );
+  $min-width-rem: if(
+    unit($min-width) == "px",
+    $min-width / 16px * 1rem,
+    $min-width
+  );
+  $max-width-rem: if(
+    unit($max-width) == "px",
+    $max-width / 16px * 1rem,
+    $max-width
+  );
+
+  $slope: ($max-size-rem - $min-size-rem) / ($max-width-rem - $min-width-rem);
+  $y-axis-intersection: (-$min-width-rem * $slope) + $min-size-rem;
+
+  @return clamp(
+    #{$min-size-rem},
+    #{$y-axis-intersection} + #{$slope * 100vw},
+    #{$max-size-rem}
+  );
+}
+
+// Mixin for responsive font sizes
+@mixin responsive-font-size($size, $scale-factor: 1.2) {
+  $base-size: map-get($font-sizes, $size);
+
+  @if $base-size {
+    font-size: $base-size;
+
+    // Scale up on larger screens
+    @media (min-width: map-get($breakpoints, md)) {
+      font-size: $base-size * $scale-factor;
+    }
+
+    @media (min-width: map-get($breakpoints, xl)) {
+      font-size: $base-size * ($scale-factor * 1.1);
+    }
+  } @else {
+    @warn "Font size '#{$size}' not found in $font-sizes map.";
+  }
+}
+
+// Mixin for fluid typography
+@mixin fluid-font($min-size, $max-size, $min-width: 320px, $max-width: 1200px) {
+  font-size: fluid-font-size($min-size, $max-size, $min-width, $max-width);
+}
+
+// Generate utility classes for font sizes
+@each $name, $size in $font-sizes {
+  .text-#{$name} {
+    font-size: $size;
+  }
+
+  .fluid-text-#{$name} {
+    @include fluid-font($size * 0.8, $size * 1.2);
+  }
+}
+
+// Generate heading classes with fluid sizing
+$heading-sizes: (
+  h1: (
+    min: 2rem,
+    max: 3.5rem,
+  ),
+  h2: (
+    min: 1.75rem,
+    max: 3rem,
+  ),
+  h3: (
+    min: 1.5rem,
+    max: 2.5rem,
+  ),
+  h4: (
+    min: 1.25rem,
+    max: 2rem,
+  ),
+  h5: (
+    min: 1.125rem,
+    max: 1.5rem,
+  ),
+  h6: (
+    min: 1rem,
+    max: 1.25rem,
+  ),
+);
+
+@each $heading, $sizes in $heading-sizes {
+  .#{$heading}-fluid {
+    @include fluid-font(map-get($sizes, min), map-get($sizes, max));
+    @include use-ranade-font(700);
+    line-height: 1.2;
+  }
+}
+
+// Utility mixin for creating custom fluid text
+@mixin text-fluid($min-px, $max-px, $min-vw: 320px, $max-vw: 1200px) {
+  @include fluid-font($min-px, $max-px, $min-vw, $max-vw);
+}
