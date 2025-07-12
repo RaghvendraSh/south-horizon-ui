@@ -106,7 +106,7 @@
     @include responsive-font-size(xs);
     @include use-ranade-font(300);
     color: var(--text-muted);
-    text-transform: uppercase;
+    text-transform: capitalize;
     letter-spacing: 0.1em;
     margin: 0;
     display: flex;

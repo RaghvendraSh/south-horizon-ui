@@ -71,8 +71,8 @@
 }
 
 .new-collections {
-  padding: 4rem 0;
-  background-color: #f8f9fa;
+  padding: 3rem 0 0;
+  background-color: transparent;
   width: 100%;
 
   &__container {
@@ -189,7 +189,7 @@
       }
     }
     @media (min-width: 1024px) {
-      margin-top: 240px;
+      margin-top: 20px;
     }
   }
 
@@ -298,11 +298,11 @@
 
   // Responsive breakpoints
   @media (max-width: 1200px) {
-    padding: 3rem 0;
+    padding: 3rem 0 0;
   }
 
   @media (max-width: 768px) {
-    padding: 2rem 0;
+    padding: 2rem 0 0;
   }
 
   @media (max-width: 480px) {

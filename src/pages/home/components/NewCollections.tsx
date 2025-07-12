@@ -36,7 +36,6 @@ const NewCollections = () => {
                 modules={[Navigation, Pagination]}
                 spaceBetween={30}
                 slidesPerView="auto"
-                // loop={true}
                 navigation={{
                   prevEl: ".new-collections__nav-btn--prev",
                   nextEl: ".new-collections__nav-btn--next",

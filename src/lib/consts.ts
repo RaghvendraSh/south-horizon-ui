@@ -62,3 +62,27 @@ export const products: Product[] = [
     category: "Short",
   },
 ];
+
+export const FEATURES_DATA = [
+  {
+    title: "High Quality",
+    description: "Crafted with care",
+    icon: ASSETS.FOOTER.HIGH_QUALITY_ICON,
+  },
+  {
+    title: "Warranty Protection",
+    description: "Over 2 years",
+    icon: ASSETS.FOOTER.WARRANTY_PROTECTION_ICON,
+  },
+  {
+    title: "Free Shipping",
+    description: "Orders above ₹1000",
+    icon: ASSETS.FOOTER.FREE_SHIPPING_ICON,
+  },
+
+  {
+    title: "24/7 Support",
+    description: "Dedicated support",
+    icon: ASSETS.FOOTER.SUPPORT_ICON,
+  },
+];
