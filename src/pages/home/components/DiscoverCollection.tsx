@@ -1,3 +1,4 @@
+import ArrowRight from "../../../components/icons/ArrowRight";
 import "../../../styles/pages/DiscoverCollection.scss";
 const DiscoverCollection = () => {
   return (
@@ -12,7 +13,10 @@ const DiscoverCollection = () => {
           piece at a time.
         </p>
         <button className="discover-collection__button">
-          Discover Collection ⟶
+          <span>Discover Collection</span>
+          <span className="discover-collection__button-icon">
+            <ArrowRight color="currentColor" />
+          </span>
         </button>
       </div>
     </div>

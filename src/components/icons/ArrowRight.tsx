@@ -1,0 +1,22 @@
+const ArrowRight = ({
+  color,
+  ...other
+}: { color: string } & React.SVGProps<SVGSVGElement>) => {
+  return (
+    <svg
+      width="23"
+      height="9"
+      viewBox="0 0 23 9"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...other}
+    >
+      <path
+        d="M17.228 8.3C17.548 7.61733 17.8573 7.02 18.156 6.508C18.476 5.996 18.7853 5.56933 19.084 5.228H0.428V3.884H19.084C18.7853 3.52133 18.476 3.084 18.156 2.572C17.8573 2.06 17.548 1.47333 17.228 0.811999H18.348C19.692 2.36933 21.1 3.52133 22.572 4.268V4.844C21.1 5.56933 19.692 6.72133 18.348 8.3H17.228Z"
+        fill={color}
+      />
+    </svg>
+  );
+};
+
+export default ArrowRight;

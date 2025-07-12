@@ -1,0 +1,317 @@
+@use "../abstracts" as *;
+@import "../global";
+
+// Essential Swiper styles
+.swiper {
+  width: 100%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  overflow: hidden;
+  list-style: none;
+  padding: 0;
+  z-index: 1;
+  display: block;
+}
+
+.swiper-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  transition-property: transform;
+  box-sizing: content-box;
+}
+
+.swiper-slide {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition-property: transform;
+  display: block;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  position: absolute;
+  top: 50%;
+  width: 27px;
+  height: 44px;
+  margin-top: -22px;
+  z-index: 10;
+  cursor: pointer;
+  display: none; // We'll use custom buttons
+}
+
+.swiper-pagination {
+  position: absolute;
+  text-align: center;
+  transition: opacity 0.3s;
+  transform: translate3d(0, 0, 0);
+  z-index: 10;
+}
+
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 1;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &.swiper-pagination-bullet-active {
+    background: #000;
+  }
+}
+
+.new-collections {
+  padding: 4rem 0;
+  background-color: #f8f9fa;
+  width: 100%;
+
+  &__container {
+    width: 100%;
+    max-width: none;
+    padding: 0 1.5rem;
+
+    @media (max-width: 768px) {
+      padding: 0 1rem;
+    }
+  }
+
+  &__content {
+    display: flex;
+    gap: 4rem;
+    align-items: flex-start;
+    width: 100%;
+
+    @media (max-width: 1024px) {
+      flex-direction: column;
+      gap: 2rem;
+    }
+  }
+
+  &__left {
+    flex: 0 0 400px;
+    padding-left: 2rem;
+
+    @media (max-width: 1024px) {
+      flex: none;
+      width: 100%;
+      padding-left: 0;
+    }
+  }
+
+  &__right {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    overflow: hidden;
+    position: relative;
+    max-width: 100%;
+  }
+
+  &__title {
+    @include responsive-font-size(3xl, 1.2);
+    font-family: "Limelight";
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    line-height: 0.9;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+
+    @media (max-width: 1024px) {
+      @include responsive-font-size(3xl, 1.1);
+    }
+
+    @media (max-width: 768px) {
+      @include responsive-font-size(3xl, 1.1);
+    }
+  }
+
+  &__subtitle {
+    @include responsive-font-size(sm, 1.1);
+    @include use-ranade-font(400);
+    color: var(--text-primary);
+    margin: 0 0 2rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+
+    @media (max-width: 1024px) {
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      @include responsive-font-size(xs, 1.1);
+    }
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    @include use-ranade-font(500);
+    @include responsive-font-size(sm, 1.1);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 2px solid var(--text-primary);
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--text-primary);
+      transition: width 0.3s ease;
+    }
+
+    &:hover {
+      transform: translateX(4px);
+      background: var(--text-primary);
+      color: white;
+
+      .new-collections__arrow {
+        transform: translateX(4px);
+      }
+    }
+    @media (min-width: 1024px) {
+      margin-top: 240px;
+    }
+  }
+
+  &__arrow {
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  &__slider-container {
+    position: relative;
+    width: 100%;
+  }
+
+  &__slider {
+    overflow: visible;
+    padding: 1rem 0;
+
+    .swiper-wrapper {
+      align-items: stretch;
+    }
+
+    .swiper-slide {
+      height: auto;
+      width: auto !important;
+    }
+  }
+
+  &__card {
+    // Card styles now handled by ProductCard component
+    width: 300px;
+
+    @media (max-width: 768px) {
+      width: 250px;
+    }
+  }
+
+  &__navigation {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-right: 2rem;
+
+    @media (max-width: 1024px) {
+      justify-content: center;
+      padding-right: 0;
+    }
+
+    @media (max-width: 768px) {
+      margin-top: 0.5rem;
+    }
+  }
+
+  &__nav-btn {
+    width: 40px;
+    height: 40px;
+    // border-radius: 8px;
+    border: 2px solid var(--text-primary);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+
+    &:hover {
+      background: var(--text-primary);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    &.swiper-button-disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+
+      &:hover {
+        background: white;
+        color: var(--text-primary);
+        transform: none;
+      }
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      width: 30px;
+      height: 30px;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  &__nav-btn--prev {
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  // Responsive breakpoints
+  @media (max-width: 1200px) {
+    padding: 3rem 0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 480px) {
+    &__container {
+      padding: 0 0.75rem;
+    }
+
+    &__card-content {
+      padding: 0.75rem;
+    }
+  }
+}

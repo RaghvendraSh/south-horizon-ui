@@ -1,8 +1,9 @@
-@import "../abstracts/common";
+@use "../abstracts" as *;
+@import "../global";
 
 .discover-collection {
   position: relative;
-  background-attachment: fixed;
+  // background-attachment: fixed;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -14,6 +15,11 @@
   min-height: 100vh;
   min-height: 100svh;
   width: 100%;
+  @media screen and (max-width: 768px) {
+    background-attachment: local;
+    min-height: 80vh;
+    min-height: 80svh;
+  }
 
   &__content {
     display: flex;
@@ -24,7 +30,7 @@
   }
 
   &__title {
-    @include responsive-font-size("5xl", 1.5);
+    @include responsive-font-size(4xl, 1.3);
     color: var(--text-white);
     margin-bottom: 1rem;
     font-family: "Limelight";
@@ -34,30 +40,13 @@
     text-transform: uppercase;
   }
   &__description {
-    @include responsive-font-size("sm", 1.2);
+    @include responsive-font-size(sm);
     @include use-ranade-font(100);
     margin-bottom: 2rem;
     color: var(--text-white);
   }
 
   &__button {
-    display: flex;
-    width: 240px;
-    height: 48px;
-    padding: 8px 16px;
-    justify-content: space-between;
-    align-items: center;
-    background: #000;
-    color: #fff;
-    text-align: center;
-    border: none;
-    @include use-ranade-font(500);
-
-    text-transform: uppercase;
-    cursor: pointer;
-
-    &:hover {
-      background-color: darken(#007bff, 10%);
-    }
+    @extend .btn-skew-animation !optional;
   }
 }
