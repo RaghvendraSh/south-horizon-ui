@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./SearchProduct.scss";
 import { ASSETS } from "../../lib/assets";
 
