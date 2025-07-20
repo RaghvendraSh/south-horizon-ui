@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import "./header.scss";
 import { ASSETS } from "../../lib/assets";
+import SearchProduct from "../searchProduct/SearchProduct";
+import CartItem, { type CartProduct } from "../cartItem/CartItem";
+import Login from "../../pages/home/components/Login";
 
 interface NavItem {
   title: string;
@@ -9,7 +12,10 @@ interface NavItem {
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeNavItem, setActiveNavItem] = useState("Men");
+  const [activeNavItem, setActiveNavItem] = useState("");
+  const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
+  const [isLoginDrawerOpen, setIsLoginDrawerOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -57,6 +63,66 @@ const Header = () => {
     { title: "Kids", route: "/kids" },
     { title: "Horizon X", route: "/horizon-x" },
   ];
+
+  // Demo cart data
+  const cartProducts: CartProduct[] = [
+    {
+      id: "1",
+      name: "Mens T-Shirt",
+      image: ASSETS.HEADER.P1,
+      color: "Blue",
+      size: "XS",
+      price: 699,
+      quantity: 1,
+    },
+    {
+      id: "2",
+      name: "Mens Summer Shorts",
+      image: ASSETS.HEADER.P1,
+      color: "Coral",
+      size: "XL",
+      price: 799,
+      quantity: 1,
+    },
+  ];
+  const recommendations: CartProduct[] = [
+    {
+      id: "3",
+      name: "Comfy X Collection",
+      image: ASSETS.HEADER.P1,
+      color: "White",
+      size: "M",
+      price: 899,
+      quantity: 1,
+    },
+    {
+      id: "4",
+      name: "Comfy X Collection",
+      image: ASSETS.HEADER.P1,
+      color: "Black",
+      size: "L",
+      price: 899,
+      quantity: 1,
+    },
+  ];
+  const subtotal = cartProducts.reduce(
+    (sum, p) => sum + p.price * p.quantity,
+    0
+  );
+
+  // Dummy handlers
+  const handleQuantityChange = (id: string, qty: number) => {
+    console.log(`Change quantity of ${id} to ${qty}`);
+    // Add logic to update quantity in cart
+  };
+  const handleRemove = (id: string) => {
+    console.log(`Remove item with id: ${id}`);
+    // Add logic to remove item from cart
+  };
+  const handleCheckout = () => {
+    console.log("Proceed to checkout");
+    // Add logic to handle checkout
+  };
 
   return (
     <>
@@ -128,7 +194,11 @@ const Header = () => {
           <div className="header__actions">
             {/* Search */}
             <div className="header__search">
-              <button className="header__search-button" aria-label="Search">
+              <button
+                className="header__search-button"
+                aria-label="Search"
+                onClick={() => setIsSearchDrawerOpen(true)}
+              >
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -142,7 +212,11 @@ const Header = () => {
 
             {/* User Account */}
             <div className="header__user">
-              <button className="header__user-button" aria-label="User account">
+              <button
+                className="header__user-button"
+                aria-label="User account"
+                onClick={() => setIsLoginDrawerOpen(true)}
+              >
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -159,6 +233,7 @@ const Header = () => {
               <button
                 className="header__cart-button"
                 aria-label="Shopping cart"
+                onClick={() => setIsCartDrawerOpen(true)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -187,7 +262,9 @@ const Header = () => {
                     </clipPath>
                   </defs>
                 </svg>
-                <span className="header__cart-count">3</span>
+                <span className="header__cart-count">
+                  {cartProducts.length}
+                </span>
               </button>
             </div>
           </div>
@@ -202,6 +279,34 @@ const Header = () => {
         onClick={() => {
           setIsMobileMenuOpen(false);
           document.body.classList.remove("menu-open");
+        }}
+      />
+
+      <SearchProduct
+        open={isSearchDrawerOpen}
+        onClose={() => setIsSearchDrawerOpen(false)}
+      />
+
+      <CartItem
+        open={isCartDrawerOpen}
+        onClose={() => setIsCartDrawerOpen(false)}
+        products={cartProducts}
+        recommendations={recommendations}
+        subtotal={subtotal}
+        onQuantityChange={handleQuantityChange}
+        onRemove={handleRemove}
+        onCheckout={handleCheckout}
+      />
+
+      {/* Login Drawer */}
+      <Login
+        open={isLoginDrawerOpen}
+        onClose={() => setIsLoginDrawerOpen(false)}
+        onGoogleSignIn={() => {
+          console.log("Google sign in clicked");
+        }}
+        onEmailContinue={(email) => {
+          console.log("Continue with email:", email);
         }}
       />
     </>

@@ -1,4 +1,5 @@
 import LOGO from "../assets/images/home/SouthHorizon-Logo.svg";
+import GOOGLE_ICON from "../assets/images/home/google-icon.svg";
 import BAG_ICON from "../assets/images/home/bag-icon.svg";
 import PROFILE_ICON from "../assets/images/home/profile-icon.svg";
 import SEARCH_ICON from "../assets/images/home/search-icon.svg";
@@ -19,6 +20,7 @@ export const ASSETS = {
     RIGHT_ARROW_ICON,
     HERO_BG,
     P1,
+    GOOGLE_ICON,
   },
   FOOTER: {
     FREE_SHIPPING_ICON,
