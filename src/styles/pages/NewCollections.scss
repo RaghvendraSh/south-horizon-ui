@@ -189,7 +189,7 @@
       }
     }
     @media (min-width: 1024px) {
-      margin-top: 20px;
+      margin-top: 250px;
     }
   }
 
@@ -213,7 +213,7 @@
     }
 
     .swiper-slide {
-      height: auto;
+      height: fit-content;
       width: auto !important;
     }
   }
