@@ -35,7 +35,7 @@ const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
     sizes: [],
     gender: [],
   });
-
+  console.log(Object.keys(activeFilters).length, "activeFilters");
   // Dynamic data based on category
   const getCategoryData = () => {
     const baseData = {
