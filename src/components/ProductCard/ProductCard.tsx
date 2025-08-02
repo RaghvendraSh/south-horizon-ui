@@ -70,6 +70,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     e.stopPropagation();
     if (onClick) onClick(id);
   };
+  console.log(description, "description");
 
   return (
     <div className="product-card">
