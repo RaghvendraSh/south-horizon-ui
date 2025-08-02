@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ProductCard from "../../../components/ProductCard/ProductCard";
+import FilterModal from "../../../components/FilterModal/FilterModal";
 import { ASSETS } from "../../../lib/assets";
 import "./PerticularSection.scss";
 
@@ -16,9 +17,24 @@ interface Product {
   category: string;
 }
 
+interface FilterState {
+  sortBy: string;
+  productType: string[];
+  colors: string[];
+  sizes: string[];
+  gender: string[];
+}
+
 const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<FilterState>({
+    sortBy: "",
+    productType: [],
+    colors: [],
+    sizes: [],
+    gender: [],
+  });
 
   // Dynamic data based on category
   const getCategoryData = () => {
@@ -199,6 +215,23 @@ const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
     setSortBy(e.target.value);
   };
 
+  const handleApplyFilters = (filters: FilterState) => {
+    setActiveFilters(filters);
+    console.log("Applied filters:", filters);
+    // Here you would typically filter the products based on the selected filters
+  };
+
+  const handleClearFilters = () => {
+    setActiveFilters({
+      sortBy: "",
+      productType: [],
+      colors: [],
+      sizes: [],
+      gender: [],
+    });
+    console.log("Filters cleared");
+  };
+
   const categoryData = getCategoryData();
   const products = getProducts();
 
@@ -294,6 +327,14 @@ const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
           </div>
         </div>
       </div>
+
+      {/* Filter Modal */}
+      <FilterModal
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleApplyFilters}
+        onClear={handleClearFilters}
+      />
     </div>
   );
 };

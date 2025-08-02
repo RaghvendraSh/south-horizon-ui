@@ -76,6 +76,7 @@
       border-radius: 8px;
       cursor: pointer;
       transition: transform 0.3s ease;
+      background-color: #f1f2f7;
 
       &:hover {
         transform: translateY(-4px);
@@ -273,10 +274,10 @@
   }
 }
 
+// Product Card Responsive Sizing
 .product-card {
   height: fit-content;
 }
-// Product Card Responsive Sizing
 @media (max-width: 768px) {
   .product-card {
     width: 200px;
