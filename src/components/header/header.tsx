@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./header.scss";
 import { ASSETS } from "../../lib/assets";
 import SearchProduct from "../searchProduct/SearchProduct";
@@ -11,6 +12,7 @@ interface NavItem {
 }
 
 const Header = () => {
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState("");
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
@@ -39,22 +41,9 @@ const Header = () => {
   };
 
   const handleRouteNavigation = (item: NavItem) => {
-    // Set active nav item
     setActiveNavItem(item.title);
-
-    // Close mobile menu if open
-    if (isMobileMenuOpen) {
-      setIsMobileMenuOpen(false);
-      document.body.classList.remove("menu-open");
-    }
-
-    // Navigate to route - you can replace this with your preferred routing method
-    // For react-router-dom: navigate(item.route);
-    // For now, using console.log for demonstration
-    console.log(`Navigating to: ${item.route}`);
-
-    // Uncomment below line if you want to use browser navigation
-    // window.history.pushState({}, '', item.route);
+    setIsMobileMenuOpen(false);
+    navigate(item.route);
   };
 
   const navItems = [
@@ -122,6 +111,21 @@ const Header = () => {
   const handleCheckout = () => {
     console.log("Proceed to checkout");
     // Add logic to handle checkout
+  };
+
+  // Auth handlers
+  const handleSignUp = (data: {
+    fullName: string;
+    email: string;
+    password: string;
+  }) => {
+    console.log("Sign up with:", data);
+    // Add logic to handle sign up
+  };
+
+  const handleLogin = (data: { email: string; password: string }) => {
+    console.log("Login with:", data);
+    // Add logic to handle login
   };
 
   return (
@@ -308,6 +312,8 @@ const Header = () => {
         onEmailContinue={(email) => {
           console.log("Continue with email:", email);
         }}
+        onSignUp={handleSignUp}
+        onLogin={handleLogin}
       />
     </>
   );

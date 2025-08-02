@@ -119,7 +119,8 @@
 
   &__title {
     @include responsive-font-size(3xl, 1.2);
-    font-family: "Limelight";
+    font-family: "Roboto Condensed";
+    font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 0.5rem 0;
     line-height: 0.9;
@@ -137,7 +138,7 @@
 
   &__subtitle {
     @include responsive-font-size(sm, 1.1);
-    @include use-ranade-font(400);
+    @include use-font(400);
     color: var(--text-primary);
     margin: 0 0 2rem 0;
     text-transform: uppercase;
@@ -158,7 +159,7 @@
     gap: 0.75rem;
     text-decoration: none;
     color: var(--text-primary);
-    @include use-ranade-font(500);
+    @include use-font(500);
     @include responsive-font-size(sm, 1.1);
     text-transform: uppercase;
     letter-spacing: 0.05em;

@@ -7,7 +7,7 @@
 body {
   margin: 0;
   padding: 0;
-  @include use-ranade-font(400);
+  @include use-font(400);
 }
 
 img {
@@ -53,7 +53,7 @@ p {
   overflow: hidden;
   background: #fff;
   color: #fff;
-  @include use-ranade-font(700);
+  @include use-font(700);
   text-transform: uppercase;
 
   span {

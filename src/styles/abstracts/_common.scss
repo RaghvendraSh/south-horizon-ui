@@ -8,7 +8,7 @@
   --header-shadow: rgba(0, 0, 0, 0.1);
 
   // Text Colors
-  --text-primary: #271111;
+  --text-primary: #000000;
   --text-secondary: #374151;
   --text-muted: #6b7280;
   --text-light-gray: #6d6d6d;
@@ -73,36 +73,15 @@ $font-sizes: (
   // 72px
   8xl: 6rem,
   // 96px
-  9xl: 8rem // 128px,,,,,,,,,,,,
+  9xl: 8rem // 128px,,,,,,,,,,,,,,,,
 );
 
-// Mixin to include the Ranade font with different weights
-@mixin ranade-font($weight, $style: normal) {
-  $suffix: map-get($ranade-fonts, $weight);
-  @if $suffix {
-    @font-face {
-      font-family: "Ranade";
-      font-style: $style;
-      font-weight: $weight;
-      src: local("Ranade #{$suffix}"),
-        url("#{$ranade-font-path}Ranade-#{$suffix}.woff") format("woff");
-    }
-  }
-}
-
-// Mixin to apply Ranade font family with specific weight
-@mixin use-ranade-font($weight: 400) {
-  font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+// Mixin to apply font family with specific weight
+@mixin use-font($weight: 400) {
+  font-family: "Roboto Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-weight: $weight;
 }
-
-// Load all Ranade font weights
-@include ranade-font(100);
-@include ranade-font(300);
-@include ranade-font(400);
-@include ranade-font(500);
-@include ranade-font(700);
 
 // Function to get font size from the map
 @function font-size($size) {
@@ -214,7 +193,7 @@ $heading-sizes: (
 @each $heading, $sizes in $heading-sizes {
   .#{$heading}-fluid {
     @include fluid-font(map-get($sizes, min), map-get($sizes, max));
-    @include use-ranade-font(700);
+    @include use-font(700);
     line-height: 1.2;
   }
 }

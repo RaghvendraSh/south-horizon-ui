@@ -99,7 +99,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <h3 className="product-card__title">{title}</h3>
         <div className="product-card__details">
-          <p className="product-card__description">{description}</p>
+          {/* <p className="product-card__description">{description}</p> */}
           <div className="product-card__price">{price}</div>
         </div>
         <div

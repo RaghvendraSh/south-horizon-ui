@@ -78,8 +78,8 @@
     }
 
     &-link {
-      @include use-ranade-font(400);
-      @include responsive-font-size(sm);
+      @include use-font(400);
+      @include responsive-font-size(xs);
       color: var(--text-secondary);
       background: none;
       border: none;
@@ -171,8 +171,7 @@
     }
 
     &-image {
-      width: 80px;
-      height: 80px;
+      width: 100%;
       object-fit: contain;
       transition: transform 0.3s ease;
 
@@ -181,13 +180,12 @@
       }
 
       @media (max-width: 768px) {
-        width: 50px;
-        height: 50px;
+        width: 85px;
       }
     }
 
     &-text {
-      @include use-ranade-font(700);
+      @include use-font(700);
       @include responsive-font-size(xl);
       color: var(--text-primary);
       letter-spacing: -0.02em;

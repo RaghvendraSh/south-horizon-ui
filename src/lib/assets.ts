@@ -10,6 +10,10 @@ import FREE_SHIPPING_ICON from "../assets/images/home/FreeShipping.svg";
 import HIGH_QUALITY_ICON from "../assets/images/home/HighQuality.svg";
 import SUPPORT_ICON from "../assets/images/home/Support.svg";
 import WARRANTY_PROTECTION_ICON from "../assets/images/home/WarrantyProtection.svg";
+//products
+import BOY_IMG from "../assets/images/products/boy.png";
+import MEN_IMG from "../assets/images/products/men.png";
+import WOMEN_IMG from "../assets/images/products/woemn.png";
 
 export const ASSETS = {
   HEADER: {
@@ -27,5 +31,10 @@ export const ASSETS = {
     HIGH_QUALITY_ICON,
     SUPPORT_ICON,
     WARRANTY_PROTECTION_ICON,
+  },
+  PRODUCTS: {
+    MEN_IMG,
+    WOMEN_IMG,
+    BOY_IMG,
   },
 };

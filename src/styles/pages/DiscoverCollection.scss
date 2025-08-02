@@ -33,15 +33,15 @@
     @include responsive-font-size(4xl, 1.3);
     color: var(--text-white);
     margin-bottom: 1rem;
-    font-family: "Limelight";
+    font-family: "Roboto Condensed";
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 100%;
     text-transform: uppercase;
   }
   &__description {
     @include responsive-font-size(sm);
-    @include use-ranade-font(100);
+    @include use-font(300);
     margin-bottom: 2rem;
     color: var(--text-white);
   }

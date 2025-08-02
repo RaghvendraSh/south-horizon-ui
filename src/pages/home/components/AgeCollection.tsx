@@ -12,19 +12,19 @@ const AgeCollection = () => {
     {
       id: "men",
       title: "SHOP FOR MEN",
-      image: ASSETS.HEADER.P1,
+      image: ASSETS.PRODUCTS.MEN_IMG,
       alt: "Men's Fashion Collection",
     },
     {
       id: "women",
       title: "SHOP FOR WOMEN",
-      image: ASSETS.HEADER.P1,
+      image: ASSETS.PRODUCTS.WOMEN_IMG,
       alt: "Women's Fashion Collection",
     },
     {
       id: "kids",
       title: "SHOP FOR KIDS",
-      image: ASSETS.HEADER.P1,
+      image: ASSETS.PRODUCTS.BOY_IMG,
       alt: "Kids' Fashion Collection",
     },
   ];
