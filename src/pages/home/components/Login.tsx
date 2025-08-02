@@ -58,6 +58,7 @@ const Login: React.FC<LoginProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  console.log(onEmailContinue, "onEmailContinue");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
