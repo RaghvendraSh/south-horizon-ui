@@ -89,11 +89,18 @@ const FilterModal: React.FC<FilterModalProps> = ({
     onClear();
   };
 
+  const handleOverlayClick = () => {
+    // Only close on desktop (screen width > 768px)
+    if (window.innerWidth > 768) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="filter-modal">
-      <div className="filter-modal__overlay" onClick={onClose}></div>
+      <div className="filter-modal__overlay" onClick={handleOverlayClick}></div>
       <div className="filter-modal__content">
         <div className="filter-modal__header">
           <h2 className="filter-modal__title">Sorts & Filters</h2>

@@ -260,6 +260,30 @@
         height: 20px;
       }
     }
+
+    &-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--text-primary);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-initial {
+      color: #fff;
+      @include use-font(600);
+      @include responsive-font-size(sm);
+      text-transform: uppercase;
+    }
   }
 
   &__cart {

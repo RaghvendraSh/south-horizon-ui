@@ -5,10 +5,18 @@ import { ASSETS } from "../../lib/assets";
 import SearchProduct from "../searchProduct/SearchProduct";
 import CartItem, { type CartProduct } from "../cartItem/CartItem";
 import Login from "../../pages/home/components/Login";
+import UserProfile from "../UserProfile/UserProfile";
 
 interface NavItem {
   title: string;
   route: string;
+}
+
+interface User {
+  fullName: string;
+  email: string;
+  phone?: string;
+  avatar?: string;
 }
 
 const Header = () => {
@@ -18,6 +26,9 @@ const Header = () => {
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const [isLoginDrawerOpen, setIsLoginDrawerOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -120,12 +131,45 @@ const Header = () => {
     password: string;
   }) => {
     console.log("Sign up with:", data);
-    // Add logic to handle sign up
+    // Simulate successful signup
+    const newUser: User = {
+      fullName: data.fullName,
+      email: data.email,
+    };
+    setCurrentUser(newUser);
+    setIsAuthenticated(true);
+    setIsLoginDrawerOpen(false);
+    // Add actual signup logic here
   };
 
   const handleLogin = (data: { email: string; password: string }) => {
     console.log("Login with:", data);
-    // Add logic to handle login
+    // Simulate successful login
+    const user: User = {
+      fullName: "John Doe", // This would come from your backend
+      email: data.email,
+      phone: "+91 9876543210",
+    };
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    setIsLoginDrawerOpen(false);
+    // Add actual login logic here
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setIsProfileOpen(false);
+    console.log("User logged out");
+    // Add actual logout logic here
+  };
+
+  const handleUserButtonClick = () => {
+    if (isAuthenticated && currentUser) {
+      setIsProfileOpen(true);
+    } else {
+      setIsLoginDrawerOpen(true);
+    }
   };
 
   return (
@@ -219,16 +263,31 @@ const Header = () => {
               <button
                 className="header__user-button"
                 aria-label="User account"
-                onClick={() => setIsLoginDrawerOpen(true)}
+                onClick={handleUserButtonClick}
               >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
+                {isAuthenticated && currentUser ? (
+                  <div className="header__user-avatar">
+                    {currentUser.avatar ? (
+                      <img
+                        src={currentUser.avatar}
+                        alt={currentUser.fullName}
+                      />
+                    ) : (
+                      <span className="header__user-initial">
+                        {currentUser.fullName.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
 
@@ -315,6 +374,16 @@ const Header = () => {
         onSignUp={handleSignUp}
         onLogin={handleLogin}
       />
+
+      {/* User Profile */}
+      {isAuthenticated && currentUser && (
+        <UserProfile
+          open={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
+          user={currentUser}
+          onLogout={handleLogout}
+        />
+      )}
     </>
   );
 };
