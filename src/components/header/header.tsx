@@ -1,5 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  registerUser,
+  loginUser,
+  googleOAuth,
+  getCart,
+  updateCartItem,
+  removeFromCart,
+  placeOrder,
+  getProductById,
+} from "../../api";
+import type {
+  RegisterUserRequest,
+  LoginUserRequest,
+  AuthResponse,
+} from "../../interfaces/auth";
+import type { PlaceOrderRequest } from "../../interfaces/orders";
+import { showToast } from "../../utils/toastService";
+import RazorpayPayment, {
+  type PaymentData,
+} from "../RazorpayPayment/RazorpayPayment";
+import {
+  setAuthToken,
+  clearAuth,
+  getAuthToken,
+  getIsAuthenticated,
+} from "../../store/slices/authSlice";
+import {
+  setUserDetails,
+  clearUserDetails,
+  getUserDetails,
+} from "../../store/slices/userSlice";
 import "./header.scss";
 import { ASSETS } from "../../lib/assets";
 import SearchProduct from "../searchProduct/SearchProduct";
@@ -12,23 +44,40 @@ interface NavItem {
   route: string;
 }
 
-interface User {
-  fullName: string;
-  email: string;
-  phone?: string;
-  avatar?: string;
-}
-
 const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Redux selectors
+  const authToken = useSelector(getAuthToken);
+  const isAuthenticated = useSelector(getIsAuthenticated);
+  const currentUser = useSelector(getUserDetails);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState("");
   const [isSearchDrawerOpen, setIsSearchDrawerOpen] = useState(false);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const [isLoginDrawerOpen, setIsLoginDrawerOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Cart state
+  const [cartProducts, setCartProducts] = useState<CartProduct[]>([]);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [cartTotals, setCartTotals] = useState({
+    total: 0,
+    discount: 0,
+    finalTotal: 0,
+  });
+
+  useEffect(() => {
+    // If there's an auth token in Redux store, user is authenticated
+    if (authToken) {
+      // You could validate the token with your backend here
+      // For now, we'll just set authenticated state based on token presence
+      // The Redux store already tracks isAuthenticated
+      // You might want to fetch user data from the token or from a separate API call
+    }
+  }, [authToken]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,104 +113,339 @@ const Header = () => {
     { title: "Horizon X", route: "/horizon-x" },
   ];
 
-  // Demo cart data
-  const cartProducts: CartProduct[] = [
-    {
-      id: "1",
-      name: "Mens T-Shirt",
-      image: ASSETS.HEADER.P1,
-      color: "Blue",
-      size: "XS",
-      price: 699,
-      quantity: 1,
-    },
-    {
-      id: "2",
-      name: "Mens Summer Shorts",
-      image: ASSETS.HEADER.P1,
-      color: "Coral",
-      size: "XL",
-      price: 799,
-      quantity: 1,
-    },
-  ];
-  const recommendations: CartProduct[] = [
-    {
-      id: "3",
-      name: "Comfy X Collection",
-      image: ASSETS.HEADER.P1,
-      color: "White",
-      size: "M",
-      price: 899,
-      quantity: 1,
-    },
-    {
-      id: "4",
-      name: "Comfy X Collection",
-      image: ASSETS.HEADER.P1,
-      color: "Black",
-      size: "L",
-      price: 899,
-      quantity: 1,
-    },
-  ];
-  const subtotal = cartProducts.reduce(
-    (sum, p) => sum + p.price * p.quantity,
-    0
-  );
+  // Fetch cart data from API
+  const fetchCartData = useCallback(async () => {
+    if (!isAuthenticated) {
+      console.log("User not authenticated, clearing cart");
+      setCartProducts([]);
+      setCartTotals({ total: 0, discount: 0, finalTotal: 0 });
+      return;
+    }
 
-  // Dummy handlers
-  const handleQuantityChange = (id: string, qty: number) => {
-    console.log(`Change quantity of ${id} to ${qty}`);
-    // Add logic to update quantity in cart
+    try {
+      setCartLoading(true);
+      console.log("Fetching cart data...");
+      const cartData = await getCart();
+      console.log("Cart data received:", cartData);
+      console.log("Cart items structure:", cartData.items);
+      console.log("First cart item:", cartData.items[0]); // Debug first item structure
+
+      // Transform API cart data to match CartProduct interface
+      // Fetch product details for each cart item
+      const transformedProducts: CartProduct[] = await Promise.all(
+        cartData.items.map(async (item) => {
+          console.log("Processing cart item:", item); // Debug individual items
+          try {
+            const productDetails = await getProductById(item.productId);
+            console.log(
+              "Product details for",
+              item.productId,
+              ":",
+              productDetails
+            ); // Debug product details
+
+            // Determine price with fallback logic
+            let itemPrice = 0;
+            if (typeof item.price === "number" && item.price > 0) {
+              itemPrice = item.price;
+            } else if (typeof item.total === "number" && item.total > 0) {
+              itemPrice = item.total;
+            } else if (
+              typeof productDetails.price === "number" &&
+              productDetails.price > 0
+            ) {
+              itemPrice = productDetails.price;
+            }
+
+            console.log(
+              "Determined price:",
+              itemPrice,
+              "from item.price:",
+              item.price,
+              "item.total:",
+              item.total,
+              "product.price:",
+              productDetails.price
+            );
+
+            const transformedItem = {
+              id: item.id,
+              name: productDetails.name,
+              image: productDetails.images[0] || ASSETS.HEADER.P1,
+              color: productDetails.color[0] || "N/A",
+              size: productDetails.size[0] || "N/A",
+              price: itemPrice,
+              quantity: item.quantity,
+            };
+
+            console.log("Transformed item:", transformedItem);
+            return transformedItem;
+          } catch (error) {
+            console.error(
+              `Failed to fetch product details for ${item.productId}:`,
+              error
+            );
+            let fallbackPrice = 0;
+            if (typeof item.price === "number" && item.price > 0) {
+              fallbackPrice = item.price;
+            } else if (typeof item.total === "number" && item.total > 0) {
+              fallbackPrice = item.total;
+            }
+
+            console.log(
+              "Fallback price:",
+              fallbackPrice,
+              "from item.price:",
+              item.price,
+              "item.total:",
+              item.total
+            );
+
+            const fallbackItem = {
+              id: item.id,
+              name: `Product ${item.productId}`,
+              image: ASSETS.HEADER.P1,
+              color: "N/A",
+              size: "N/A",
+              price: fallbackPrice,
+              quantity: item.quantity,
+            };
+            return fallbackItem;
+          }
+        })
+      );
+
+      console.log("Transformed cart products:", transformedProducts);
+      setCartProducts(transformedProducts);
+
+      // Store cart totals from API response
+      setCartTotals({
+        total: cartData.total,
+        discount: cartData.discount,
+        finalTotal: cartData.finalTotal,
+      });
+    } catch (error) {
+      console.error("Failed to fetch cart:", error);
+      showToast("Failed to load cart", "error");
+      setCartProducts([]); // Clear cart on error
+      setCartTotals({ total: 0, discount: 0, finalTotal: 0 });
+    } finally {
+      setCartLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  // Fetch cart data when user authentication status changes
+  useEffect(() => {
+    fetchCartData();
+  }, [fetchCartData]);
+
+  // Listen for cart updates from other components (like ProductCard)
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      fetchCartData();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
+  }, [fetchCartData]);
+
+  // Cart handlers - Updated to use real API calls
+  const handleQuantityChange = async (id: string, qty: number) => {
+    if (qty <= 0) return;
+    console.log("Attempting to update cart item:", { id, qty });
+    try {
+      await updateCartItem(id, { quantity: qty });
+      showToast("Cart updated successfully", "success");
+      // Refresh cart data to ensure consistency
+      await fetchCartData();
+    } catch (error) {
+      console.error("Failed to update cart:", error);
+      showToast("Failed to update cart", "error");
+      // Refresh cart data even on error to sync with server state
+      await fetchCartData();
+    }
   };
-  const handleRemove = (id: string) => {
-    console.log(`Remove item with id: ${id}`);
-    // Add logic to remove item from cart
+
+  const handleRemove = async (id: string) => {
+    console.log("Attempting to remove cart item with ID:", id);
+    try {
+      await removeFromCart(id);
+      console.log("Successfully removed item from cart");
+      showToast("Item removed from cart", "success");
+      // Refresh cart data to ensure consistency
+      await fetchCartData();
+    } catch (error) {
+      console.error("Failed to remove item:", error);
+      showToast("Failed to remove item", "error");
+      // Refresh cart data even on error to sync with server state
+      await fetchCartData();
+    }
   };
-  const handleCheckout = () => {
-    console.log("Proceed to checkout");
-    // Add logic to handle checkout
+
+  const handleCheckout = (
+    initiatePayment?: (data: PaymentData) => Promise<void>
+  ) => {
+    if (cartProducts.length === 0) {
+      showToast("Your cart is empty", "error");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      showToast("Please login to proceed with checkout", "error");
+      setIsLoginDrawerOpen(true);
+      setIsCartDrawerOpen(false);
+      return;
+    }
+
+    if (!initiatePayment) {
+      showToast("Payment system not ready", "error");
+      return;
+    }
+
+    // Navigate to checkout page or open checkout modal
+    // For now, we'll create a simple order placement
+    handlePlaceOrder(initiatePayment);
+  };
+
+  const handlePlaceOrder = async (
+    initiatePayment: (data: PaymentData) => Promise<void>
+  ) => {
+    try {
+      // This is a simplified order placement
+      // In real implementation, you'd collect shipping address and payment method
+      const orderData: PlaceOrderRequest = {
+        shippingAddress: {
+          street: "123 Main St", // This should come from user's selected address
+          city: "Sample City",
+          state: "Sample State",
+          zipCode: "12345",
+          country: "India",
+        },
+        paymentMethod: "razorpay", // This should be selected by user
+      };
+
+      const order = await placeOrder(orderData);
+
+      // Use the new payment component
+      const paymentData: PaymentData = {
+        amount: cartTotals.finalTotal,
+        orderId: order.id,
+        customerInfo: {
+          name: currentUser?.fullName || "",
+          email: currentUser?.email || "",
+          phone: currentUser?.phone || "",
+        },
+        description: "Order Payment",
+        onSuccess: (response) => {
+          console.log("Payment successful:", response);
+          showToast("Order placed successfully!", "success");
+          setCartProducts([]);
+          setCartTotals({ total: 0, discount: 0, finalTotal: 0 });
+          setIsCartDrawerOpen(false);
+          // You can also redirect to order confirmation page
+        },
+        onCancel: () => {
+          showToast("Payment cancelled", "error");
+        },
+        onError: (error) => {
+          console.error("Payment failed:", error);
+          showToast("Payment failed. Please try again.", "error");
+        },
+      };
+
+      await initiatePayment(paymentData);
+    } catch (error) {
+      console.error("Failed to place order:", error);
+      showToast("Failed to place order", "error");
+    }
   };
 
   // Auth handlers
-  const handleSignUp = (data: {
+  const handleSignUp = async (data: {
     fullName: string;
     email: string;
     password: string;
+    phone: string;
   }) => {
-    console.log("Sign up with:", data);
-    // Simulate successful signup
-    const newUser: User = {
-      fullName: data.fullName,
-      email: data.email,
-    };
-    setCurrentUser(newUser);
-    setIsAuthenticated(true);
-    setIsLoginDrawerOpen(false);
-    // Add actual signup logic here
+    try {
+      const registerData: RegisterUserRequest = {
+        name: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+      };
+
+      const response: AuthResponse = await registerUser(registerData);
+
+      // Handle successful registration
+      const userData = {
+        name: response.user.name,
+        email: response.user.email,
+        mobile: data.phone,
+        fullName: response.user.name,
+        phone: data.phone,
+        avatar: "",
+      };
+
+      dispatch(setUserDetails(userData));
+      dispatch(setAuthToken(response.token));
+      setIsLoginDrawerOpen(false);
+      showToast("Account created successfully!", "success");
+    } catch (error) {
+      console.error("Signup failed:", error);
+      showToast("Signup failed. Please try again.", "error");
+    }
   };
 
-  const handleLogin = (data: { email: string; password: string }) => {
-    console.log("Login with:", data);
-    // Simulate successful login
-    const user: User = {
-      fullName: "John Doe", // This would come from your backend
-      email: data.email,
-      phone: "+91 9876543210",
-    };
-    setCurrentUser(user);
-    setIsAuthenticated(true);
-    setIsLoginDrawerOpen(false);
-    // Add actual login logic here
+  const handleLogin = async (data: { email: string; password: string }) => {
+    try {
+      const loginData: LoginUserRequest = {
+        email: data.email,
+        password: data.password,
+      };
+
+      const response: AuthResponse = await loginUser(loginData);
+
+      // Handle successful login
+      const userData = {
+        name: response.user.name,
+        email: response.user.email,
+        mobile: response.user.phone,
+        fullName: response.user.name,
+        phone: response.user.phone,
+        avatar: "",
+      };
+
+      dispatch(setUserDetails(userData));
+      dispatch(setAuthToken(response.token));
+      setIsLoginDrawerOpen(false);
+      showToast("Login successful!", "success");
+    } catch (error) {
+      console.error("Login failed:", error);
+      showToast("Login failed. Please check your credentials.", "error");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleOAuth();
+      showToast("Google sign-in initiated", "success");
+      // Note: Google OAuth typically involves redirects or popup windows
+      // The actual user data would be handled by the OAuth callback
+    } catch (error) {
+      console.error("Google sign-in failed:", error);
+      showToast("Google sign-in failed. Please try again.", "error");
+    }
   };
 
   const handleLogout = () => {
-    setCurrentUser(null);
-    setIsAuthenticated(false);
+    dispatch(clearUserDetails());
+    dispatch(clearAuth());
     setIsProfileOpen(false);
+    showToast("Logged out successfully", "success");
     console.log("User logged out");
-    // Add actual logout logic here
   };
 
   const handleUserButtonClick = () => {
@@ -350,24 +634,27 @@ const Header = () => {
         onClose={() => setIsSearchDrawerOpen(false)}
       />
 
-      <CartItem
-        open={isCartDrawerOpen}
-        onClose={() => setIsCartDrawerOpen(false)}
-        products={cartProducts}
-        recommendations={recommendations}
-        subtotal={subtotal}
-        onQuantityChange={handleQuantityChange}
-        onRemove={handleRemove}
-        onCheckout={handleCheckout}
-      />
+      <RazorpayPayment>
+        {(initiatePayment) => (
+          <CartItem
+            open={isCartDrawerOpen}
+            onClose={() => setIsCartDrawerOpen(false)}
+            products={cartProducts}
+            // recommendations={recommendations}
+            subtotal={cartTotals.finalTotal}
+            loading={cartLoading}
+            onQuantityChange={handleQuantityChange}
+            onRemove={handleRemove}
+            onCheckout={() => handleCheckout(initiatePayment)}
+          />
+        )}
+      </RazorpayPayment>
 
       {/* Login Drawer */}
       <Login
         open={isLoginDrawerOpen}
         onClose={() => setIsLoginDrawerOpen(false)}
-        onGoogleSignIn={() => {
-          console.log("Google sign in clicked");
-        }}
+        onGoogleSignIn={handleGoogleSignIn}
         onEmailContinue={(email) => {
           console.log("Continue with email:", email);
         }}

@@ -1,6 +1,17 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { getUserOrders, cancelOrder } from "../../../api";
+import { showToast } from "../../../utils/toastService";
 import "./OrderHistory.scss";
 import { ASSETS } from "../../../lib/assets";
+
+interface AddressObject {
+  street?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  zip?: string;
+  country?: string;
+}
 
 interface OrderItem {
   id: string;
@@ -23,80 +34,76 @@ interface Order {
   trackingNumber?: string;
 }
 
-const OrderHistory: React.FC = () => {
-  const [orders] = useState<Order[]>([
-    {
-      id: "1",
-      orderNumber: "SH202412001",
-      date: "2024-12-15",
-      status: "delivered",
-      total: 2399,
-      trackingNumber: "TRK123456789",
-      shippingAddress: "123 Main Street, Mumbai, Maharashtra - 400001",
-      items: [
-        {
-          id: "1",
-          name: "Men's Cotton T-Shirt",
-          image: ASSETS.HEADER.P1,
-          price: 899,
-          quantity: 1,
-          size: "M",
-          color: "Black",
-        },
-        {
-          id: "2",
-          name: "Women's Track Pants",
-          image: ASSETS.HEADER.P1,
-          price: 1500,
-          quantity: 1,
-          size: "S",
-          color: "Navy",
-        },
-      ],
-    },
-    {
-      id: "2",
-      orderNumber: "SH202412002",
-      date: "2024-12-10",
-      status: "shipped",
-      total: 1799,
-      trackingNumber: "TRK987654321",
-      shippingAddress: "456 Business Avenue, Mumbai, Maharashtra - 400002",
-      items: [
-        {
-          id: "3",
-          name: "Unisex Hoodie",
-          image: ASSETS.HEADER.P1,
-          price: 1799,
-          quantity: 1,
-          size: "L",
-          color: "Gray",
-        },
-      ],
-    },
-    {
-      id: "3",
-      orderNumber: "SH202412003",
-      date: "2024-12-05",
-      status: "processing",
-      total: 2999,
-      shippingAddress: "123 Main Street, Mumbai, Maharashtra - 400001",
-      items: [
-        {
-          id: "4",
-          name: "Premium Sweatshirt",
-          image: ASSETS.HEADER.P1,
-          price: 2999,
-          quantity: 1,
-          size: "XL",
-          color: "White",
-        },
-      ],
-    },
-  ]);
+// API response interfaces
+interface ApiOrderItem {
+  id?: string;
+  _id?: string;
+  name?: string;
+  productName?: string;
+  image?: string;
+  price?: number;
+  unitPrice?: number;
+  quantity: number;
+  size?: string;
+  color?: string;
+}
 
+interface ApiOrder {
+  id?: string;
+  _id?: string;
+  orderNumber?: string;
+  createdAt?: string;
+  date?: string;
+  status?: string;
+  total?: number;
+  totalAmount?: number;
+  shippingAddress?: string;
+  trackingNumber?: string;
+  items?: ApiOrderItem[];
+}
+
+const OrderHistory: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("all");
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await getUserOrders();
+      // Transform the API response to match the local Order interface
+      const transformedOrders: Order[] = response.map((apiOrder: ApiOrder) => ({
+        id: apiOrder.id || apiOrder._id || "",
+        orderNumber: apiOrder.orderNumber || `SH${apiOrder.id || apiOrder._id}`,
+        date: apiOrder.createdAt || apiOrder.date || "",
+        status: (apiOrder.status as Order["status"]) || "processing",
+        total: apiOrder.total || apiOrder.totalAmount || 0,
+        shippingAddress: apiOrder.shippingAddress || "No address provided",
+        trackingNumber: apiOrder.trackingNumber,
+        items:
+          apiOrder.items?.map((item: ApiOrderItem) => ({
+            id: item.id || item._id || "",
+            name: item.name || item.productName || "",
+            image: item.image || ASSETS.HEADER.P1, // fallback image
+            price: item.price || item.unitPrice || 0,
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color,
+          })) || [],
+      }));
+      setOrders(transformedOrders);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+      showToast("Failed to load orders", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: Order["status"]) => {
     switch (status) {
@@ -109,7 +116,7 @@ const OrderHistory: React.FC = () => {
       case "cancelled":
         return "#F44336";
       default:
-        return "#666";
+        return "#757575";
     }
   };
 
@@ -128,14 +135,74 @@ const OrderHistory: React.FC = () => {
     }
   };
 
-  const filteredOrders = orders.filter(
-    (order) => filterStatus === "all" || order.status === filterStatus
-  );
+  const filteredOrders =
+    filterStatus === "all"
+      ? orders
+      : orders.filter((order) => order.status === filterStatus);
+
+  const formatShippingAddress = (address: string) => {
+    if (!address || address === "No address provided")
+      return "No address provided";
+
+    // Try to parse as JSON first (for structured address objects)
+    try {
+      const parsedAddress: AddressObject = JSON.parse(address);
+      if (typeof parsedAddress === "object" && parsedAddress !== null) {
+        // Extract address components in logical order
+        const parts = [
+          parsedAddress.street,
+          parsedAddress.city,
+          parsedAddress.state,
+          parsedAddress.zipCode || parsedAddress.zip,
+          parsedAddress.country,
+        ].filter((part) => part && part.toString().trim().length > 0);
+
+        return parts.join(", ");
+      }
+    } catch {
+      // Not a JSON object, continue with string parsing
+    }
+
+    // If the address is already comma-separated, clean it up
+    if (address.includes(",")) {
+      return address
+        .split(",")
+        .map((part) => part.trim())
+        .filter((part) => part.length > 0)
+        .join(", ");
+    }
+
+    // If the address contains newlines or pipe separators, convert to comma-separated
+    const separators = /[\n\r|;]+/;
+    if (separators.test(address)) {
+      return address
+        .split(separators)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0)
+        .join(", ");
+    }
+
+    // If it's a single line address, try to parse common patterns
+    // Example: "123 Main St New York NY 10001" -> "123 Main St, New York, NY, 10001"
+    const words = address.trim().split(/\s+/);
+    if (words.length > 4) {
+      // Simple heuristic: group every 2-3 words for better readability
+      const formatted = [];
+      for (let i = 0; i < words.length; i += 2) {
+        const group = words.slice(i, i + 2).join(" ");
+        formatted.push(group);
+      }
+      return formatted.join(", ");
+    }
+
+    // Return as is if no special formatting is needed
+    return address;
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-IN", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
   };
@@ -145,13 +212,35 @@ const OrderHistory: React.FC = () => {
   };
 
   const handleReorder = (order: Order) => {
-    console.log("Reordering:", order);
-    // Add items to cart logic here
+    console.log("Reorder:", order);
+    // Add reorder logic here
   };
 
   const handleTrackOrder = (trackingNumber: string) => {
-    console.log("Tracking order:", trackingNumber);
-    // Open tracking page logic here
+    console.log("Track order:", trackingNumber);
+    // Add tracking logic here
+  };
+
+  const handleCancelOrder = async (orderId: string) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) {
+      return;
+    }
+
+    try {
+      await cancelOrder(orderId);
+      // Update the order status in local state
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId
+            ? { ...order, status: "cancelled" as const }
+            : order
+        )
+      );
+      showToast("Order cancelled successfully", "success");
+    } catch (error) {
+      console.error("Failed to cancel order:", error);
+      showToast("Failed to cancel order", "error");
+    }
   };
 
   if (selectedOrder) {
@@ -223,30 +312,30 @@ const OrderHistory: React.FC = () => {
 
           <div className="order-details__shipping">
             <h3>Shipping Address</h3>
-            <p>{selectedOrder.shippingAddress}</p>
+            <p>{formatShippingAddress(selectedOrder.shippingAddress)}</p>
           </div>
-        </div>
 
-        <div className="order-details__items">
-          <h3>Order Items</h3>
-          {selectedOrder.items.map((item) => (
-            <div key={item.id} className="order-details__item">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="order-details__item-image"
-              />
-              <div className="order-details__item-info">
-                <h4 className="order-details__item-name">{item.name}</h4>
-                <div className="order-details__item-details">
-                  {item.size && <span>Size: {item.size}</span>}
-                  {item.color && <span>Color: {item.color}</span>}
-                  <span>Qty: {item.quantity}</span>
+          <div className="order-details__items">
+            <h3>Order Items</h3>
+            {selectedOrder.items.map((item) => (
+              <div key={item.id} className="order-details__item">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="order-details__item-image"
+                />
+                <div className="order-details__item-info">
+                  <h4 className="order-details__item-name">{item.name}</h4>
+                  <div className="order-details__item-details">
+                    {item.size && <span>Size: {item.size}</span>}
+                    {item.color && <span>Color: {item.color}</span>}
+                    <span>Qty: {item.quantity}</span>
+                  </div>
+                  <p className="order-details__item-price">₹{item.price}</p>
                 </div>
-                <p className="order-details__item-price">₹{item.price}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -256,11 +345,13 @@ const OrderHistory: React.FC = () => {
     <div className="order-history">
       <div className="order-history__header">
         <h2 className="order-history__title">Order History</h2>
-        <div className="order-history__filters">
+        <div className="order-history__filter">
+          <label htmlFor="status-filter">Filter by status:</label>
           <select
-            className="order-history__filter"
+            id="status-filter"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
+            className="order-history__filter-select"
           >
             <option value="all">All Orders</option>
             <option value="delivered">Delivered</option>
@@ -272,7 +363,11 @@ const OrderHistory: React.FC = () => {
       </div>
 
       <div className="order-history__list">
-        {filteredOrders.length === 0 ? (
+        {loading ? (
+          <div className="order-history__loading">
+            <p>Loading orders...</p>
+          </div>
+        ) : filteredOrders.length === 0 ? (
           <div className="order-history__empty">
             <p>No orders found.</p>
           </div>
@@ -285,55 +380,61 @@ const OrderHistory: React.FC = () => {
                     {order.orderNumber}
                   </h3>
                   <p className="order-history__order-date">
-                    Ordered on {formatDate(order.date)}
+                    {formatDate(order.date)}
                   </p>
                 </div>
                 <div className="order-history__item-status">
                   <span
-                    className="order-history__status"
-                    style={{ color: getStatusColor(order.status) }}
+                    className="order-history__status-badge"
+                    style={{ backgroundColor: getStatusColor(order.status) }}
                   >
                     {getStatusText(order.status)}
                   </span>
-                  <span className="order-history__total">₹{order.total}</span>
                 </div>
               </div>
 
               <div className="order-history__item-content">
-                <div className="order-history__items">
-                  {order.items.slice(0, 2).map((item) => (
-                    <div key={item.id} className="order-history__product">
+                <div className="order-history__item-summary">
+                  <div className="order-history__item-images">
+                    {order.items.slice(0, 3).map((item, index) => (
                       <img
+                        key={index}
                         src={item.image}
                         alt={item.name}
-                        className="order-history__product-image"
+                        className="order-history__item-image"
                       />
-                      <div className="order-history__product-info">
-                        <p className="order-history__product-name">
-                          {item.name}
-                        </p>
-                        <div className="order-history__product-details">
-                          {item.size && <span>Size: {item.size}</span>}
-                          {item.color && <span>Color: {item.color}</span>}
-                        </div>
+                    ))}
+                    {order.items.length > 3 && (
+                      <div className="order-history__item-more">
+                        +{order.items.length - 3}
                       </div>
-                    </div>
-                  ))}
-                  {order.items.length > 2 && (
-                    <p className="order-history__more-items">
-                      +{order.items.length - 2} more items
+                    )}
+                  </div>
+                  <div className="order-history__item-details">
+                    <p className="order-history__item-count">
+                      {order.items.length} item
+                      {order.items.length > 1 ? "s" : ""}
                     </p>
-                  )}
+                    <p className="order-history__item-total">₹{order.total}</p>
+                  </div>
                 </div>
 
                 <div className="order-history__item-actions">
                   <button
-                    className="order-history__action-btn"
+                    className="order-history__action-btn order-history__action-btn--primary"
                     onClick={() => handleViewDetails(order)}
                   >
                     View Details
                   </button>
-                  {order.trackingNumber && (
+                  {order.status === "delivered" && (
+                    <button
+                      className="order-history__action-btn"
+                      onClick={() => handleReorder(order)}
+                    >
+                      Reorder
+                    </button>
+                  )}
+                  {order.trackingNumber && order.status !== "delivered" && (
                     <button
                       className="order-history__action-btn"
                       onClick={() => handleTrackOrder(order.trackingNumber!)}
@@ -341,12 +442,15 @@ const OrderHistory: React.FC = () => {
                       Track Order
                     </button>
                   )}
-                  <button
-                    className="order-history__action-btn primary"
-                    onClick={() => handleReorder(order)}
-                  >
-                    Reorder
-                  </button>
+                  {(order.status === "processing" ||
+                    order.status === "shipped") && (
+                    <button
+                      className="order-history__action-btn order-history__action-btn--danger"
+                      onClick={() => handleCancelOrder(order.id)}
+                    >
+                      Cancel Order
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

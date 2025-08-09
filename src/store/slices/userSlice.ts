@@ -4,12 +4,18 @@ export interface UserSliceState {
   name: string;
   email: string;
   mobile: string;
+  fullName: string;
+  phone: string;
+  avatar?: string;
 }
 
 const initialState: UserSliceState = {
   name: "",
   mobile: "",
   email: "",
+  fullName: "",
+  phone: "",
+  avatar: "",
 };
 
 // If you are not using async thunks you can use the standalone `createSlice`.

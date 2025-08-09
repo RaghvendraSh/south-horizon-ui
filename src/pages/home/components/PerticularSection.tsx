@@ -1,19 +1,13 @@
-import React, { useState } from "react";
-import ProductCard from "../../../components/ProductCard/ProductCard";
+import { useEffect, useState } from "react";
+import ProductCard from "../../../components/ProductCard";
 import FilterModal from "../../../components/FilterModal/FilterModal";
-import { ASSETS } from "../../../lib/assets";
+import { getAllCategories, getProductsWithFilters } from "../../../api";
+import type { Category } from "../../../interfaces/categories";
+import type { Product } from "../../../interfaces/products";
+import { normalizeProductsResponse } from "../../../utils/apiHelpers";
 import "./PerticularSection.scss";
 
 interface PerticularSectionProps {
-  category: "men" | "women" | "kids" | "horizon-x";
-}
-
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  price: string;
-  image: string;
   category: string;
 }
 
@@ -28,183 +22,43 @@ interface FilterState {
 const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<FilterState>({
-    sortBy: "",
-    productType: [],
-    colors: [],
-    sizes: [],
-    gender: [],
-  });
-  console.log(Object.keys(activeFilters).length, "activeFilters");
-  // Dynamic data based on category
-  const getCategoryData = () => {
-    const baseData = {
-      men: {
-        title: "Featured Horizon",
-        subtitle:
-          "Step into the spotlight — our most loved picks of the season. This week's horizon: fresh drops, refined fits, effortless style.",
-        heroImages: [
-          {
-            image: ASSETS.PRODUCTS.MEN_IMG,
-            title: "SHOP FOR MEN",
-            category: "men",
-          },
-          {
-            image: ASSETS.PRODUCTS.WOMEN_IMG,
-            title: "SHOP FOR WOMEN",
-            category: "women",
-          },
-          {
-            image: ASSETS.PRODUCTS.BOY_IMG,
-            title: "SHOP FOR KIDS",
-            category: "kids",
-          },
-        ],
-        breadcrumb: "Men",
-      },
-      women: {
-        title: "Featured Horizon",
-        subtitle:
-          "Step into the spotlight — our most loved picks of the season. This week's horizon: fresh drops, refined fits, effortless style.",
-        heroImages: [
-          {
-            image: ASSETS.PRODUCTS.WOMEN_IMG,
-            title: "SHOP FOR WOMEN",
-            category: "women",
-          },
-          {
-            image: ASSETS.PRODUCTS.MEN_IMG,
-            title: "SHOP FOR MEN",
-            category: "men",
-          },
-          {
-            image: ASSETS.PRODUCTS.BOY_IMG,
-            title: "SHOP FOR KIDS",
-            category: "kids",
-          },
-        ],
-        breadcrumb: "Women",
-      },
-      kids: {
-        title: "Featured Horizon",
-        subtitle:
-          "Step into the spotlight — our most loved picks of the season. This week's horizon: fresh drops, refined fits, effortless style.",
-        heroImages: [
-          {
-            image: ASSETS.PRODUCTS.BOY_IMG,
-            title: "SHOP FOR KIDS",
-            category: "kids",
-          },
-          {
-            image: ASSETS.PRODUCTS.MEN_IMG,
-            title: "SHOP FOR MEN",
-            category: "men",
-          },
-          {
-            image: ASSETS.PRODUCTS.WOMEN_IMG,
-            title: "SHOP FOR WOMEN",
-            category: "women",
-          },
-        ],
-        breadcrumb: "Kids",
-      },
-      "horizon-x": {
-        title: "Featured Horizon",
-        subtitle:
-          "Step into the spotlight — our most loved picks of the season. This week's horizon: fresh drops, refined fits, effortless style.",
-        heroImages: [
-          {
-            image: ASSETS.HEADER.P1,
-            title: "SHOP HORIZON X",
-            category: "horizon-x",
-          },
-          {
-            image: ASSETS.PRODUCTS.MEN_IMG,
-            title: "SHOP FOR MEN",
-            category: "men",
-          },
-          {
-            image: ASSETS.PRODUCTS.WOMEN_IMG,
-            title: "SHOP FOR WOMEN",
-            category: "women",
-          },
-        ],
-        breadcrumb: "Horizon X",
-      },
-    };
-    return baseData[category];
-  };
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[] | null>(null);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
 
-  // Dummy products based on category
-  const getProducts = (): Product[] => {
-    const baseProducts = [
-      {
-        id: "1",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-      {
-        id: "2",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-      {
-        id: "3",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-      {
-        id: "4",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-      {
-        id: "5",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-      {
-        id: "6",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-      {
-        id: "7",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-      {
-        id: "8",
-        title: `${getCategoryData().breadcrumb}'s T-Shirt`,
-        description: "Premium cotton blend",
-        price: "₹899",
-        image: ASSETS.HEADER.P1,
-        category: category,
-      },
-    ];
-    return baseProducts;
-  };
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await getProductsWithFilters({ category });
+        const productsArray = normalizeProductsResponse(response);
+        setProducts(productsArray);
+      } catch {
+        setError("Failed to fetch products. Please try again later.");
+        setProducts([]); // Set empty array on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [category]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getAllCategories();
+        setCategories(response);
+      } catch {
+        setCategoryError("Failed to fetch categories. Please try again later.");
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleProductClick = (id: string) => {
     console.log(`Product clicked: ${id}`);
@@ -216,24 +70,40 @@ const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
   };
 
   const handleApplyFilters = (filters: FilterState) => {
-    setActiveFilters(filters);
     console.log("Applied filters:", filters);
     // Here you would typically filter the products based on the selected filters
   };
 
   const handleClearFilters = () => {
-    setActiveFilters({
-      sortBy: "",
-      productType: [],
-      colors: [],
-      sizes: [],
-      gender: [],
-    });
     console.log("Filters cleared");
   };
 
-  const categoryData = getCategoryData();
-  const products = getProducts();
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (categoryError) {
+    return <div>{categoryError}</div>;
+  }
+
+  if (!categories) {
+    return <div>Loading categories...</div>;
+  }
+
+  const categoryData = categories.find((cat) => cat.id === category) || {
+    id: "",
+    name: "",
+    description: "",
+    image: "",
+    title: "",
+    subtitle: "",
+    heroImages: [],
+    breadcrumb: "",
+  };
 
   return (
     <div className="particular-section">
@@ -255,26 +125,31 @@ const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
             </p>
           </div>
           <div className="particular-section__hero-grid">
-            {categoryData.heroImages.map((item, index) => (
-              <div key={index} className="particular-section__hero-item">
-                <img src={item.image} alt={item.title} />
-                <div className="particular-section__hero-overlay">
-                  <button className="particular-section__hero-btn">
-                    {item.title}
-                    <svg
-                      width="20"
-                      height="20"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <line x1="5" y1="12" x2="19" y2="12"></line>
-                      <polyline points="12,5 19,12 12,19"></polyline>
-                    </svg>
-                  </button>
+            {(categoryData.heroImages ?? []).map(
+              (
+                item: { image: string; title: string; category: string },
+                index: number
+              ) => (
+                <div key={index} className="particular-section__hero-item">
+                  <img src={item.image} alt={item.title} />
+                  <div className="particular-section__hero-overlay">
+                    <button className="particular-section__hero-btn">
+                      {item.title}
+                      <svg
+                        width="20"
+                        height="20"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12,5 19,12 12,19"></polyline>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </div>
 
@@ -315,11 +190,12 @@ const PerticularSection: React.FC<PerticularSectionProps> = ({ category }) => {
                 <ProductCard
                   key={product.id}
                   id={product.id}
-                  title={product.title}
-                  description={product.description}
-                  price={product.price}
-                  image={product.image}
-                  category={product.category}
+                  title={product.name}
+                  price={product.price.toString()}
+                  image={product.images[0]}
+                  category={product.category.name}
+                  availableColors={product.color}
+                  availableSizes={product.size}
                   onClick={handleProductClick}
                 />
               ))}

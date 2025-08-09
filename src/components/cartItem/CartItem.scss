@@ -348,3 +348,30 @@
     padding: 1rem 0.5rem 1rem 0.5rem;
   }
 }
+
+// Empty cart state
+.cart-drawer__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.cart-drawer__empty-message {
+  p {
+    margin: 0 0 0.5rem 0;
+    color: #666;
+
+    &:first-child {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    &:last-child {
+      font-size: 0.9rem;
+    }
+  }
+}

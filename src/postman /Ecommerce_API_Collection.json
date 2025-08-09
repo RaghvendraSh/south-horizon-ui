@@ -1,0 +1,1278 @@
+{
+  "info": {
+    "name": "Ecommerce API Collection",
+    "description": "Complete API collection for the enhanced ecommerce backend with order management, authentication, products, cart, payments, and admin features",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.southhorizon.in",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{user_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1234567890\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Phone Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/phone-login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "phone-login"]
+            }
+          }
+        },
+        {
+          "name": "Verify Phone OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1234567890\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-phone-login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-phone-login"]
+            }
+          }
+        },
+        {
+          "name": "Google OAuth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/google",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "google"]
+            }
+          }
+        },
+        {
+          "name": "Send Phone OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/send-phone-otp",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "send-phone-otp"]
+            }
+          }
+        },
+        {
+          "name": "Verify Phone",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1234567890\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-phone",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-phone"]
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-email?token=verification_token_here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-email"],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "verification_token_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Get Products with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products?category=Electronics&minPrice=10&maxPrice=1000&color=red&size=M&isFeatured=true&sortBy=price&sortOrder=asc&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Electronics"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "10"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "1000"
+                },
+                {
+                  "key": "color",
+                  "value": "red"
+                },
+                {
+                  "key": "size",
+                  "value": "M"
+                },
+                {
+                  "key": "isFeatured",
+                  "value": "true"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "price"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/product-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", "product-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Create Product (Admin) - JSON",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sample Product\",\n  \"description\": \"A sample product description\",\n  \"price\": 99.99,\n  \"color\": [\"red\", \"blue\"],\n  \"size\": [\"S\", \"M\", \"L\"],\n  \"images\": [\"https://via.placeholder.com/150\"],\n  \"isFeatured\": false,\n  \"isTop\": false,\n  \"isNew\": true,\n  \"categoryId\": \"category-id-here\",\n  \"inventory\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Create Product (Admin) - Form Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Sample Product",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "A sample product description",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "99.99",
+                  "type": "text"
+                },
+                {
+                  "key": "color",
+                  "value": "red",
+                  "type": "text"
+                },
+                {
+                  "key": "color",
+                  "value": "blue",
+                  "type": "text"
+                },
+                {
+                  "key": "size",
+                  "value": "S",
+                  "type": "text"
+                },
+                {
+                  "key": "size",
+                  "value": "M",
+                  "type": "text"
+                },
+                {
+                  "key": "isFeatured",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "isTop",
+                  "value": "false",
+                  "type": "text"
+                },
+                {
+                  "key": "isNew",
+                  "value": "true",
+                  "type": "text"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "category-id-here",
+                  "type": "text"
+                },
+                {
+                  "key": "inventory",
+                  "value": "50",
+                  "type": "text"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Update Product (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Product Name\",\n  \"description\": \"Updated description\",\n  \"price\": 149.99,\n  \"color\": [\"red\", \"green\"],\n  \"size\": [\"M\", \"L\", \"XL\"],\n  \"images\": [\"https://via.placeholder.com/150\"],\n  \"isFeatured\": true,\n  \"isTop\": false,\n  \"isNew\": false,\n  \"categoryId\": \"category-id-here\",\n  \"inventory\": 75\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/products/product-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", "product-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/products/product-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", "product-id-here"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cart",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Add to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"product-id-here\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cart/add",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cart", "add"]
+            }
+          }
+        },
+        {
+          "name": "Update Cart Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cart/items/item-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cart", "items", "item-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Remove from Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cart/items/item-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cart", "items", "item-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Apply Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"SAVE20\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/cart/apply-coupon",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cart", "apply-coupon"]
+            }
+          }
+        },
+        {
+          "name": "Remove Coupon",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cart/remove-coupon",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cart", "remove-coupon"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders - Enhanced",
+      "item": [
+        {
+          "name": "Place Order (Enhanced)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zipCode\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"paymentMethod\": \"credit_card\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/place",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "place"]
+            }
+          }
+        },
+        {
+          "name": "Get User Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Search Orders (User)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/search?status=pending&startDate=2024-01-01&endDate=2024-12-31&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "search"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/order-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "order-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Get Order Status History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/order-id-here/history",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "order-id-here", "history"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/order-id-here/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "order-id-here", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders - Admin",
+      "item": [
+        {
+          "name": "Update Order Status (Enhanced)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"confirmed\",\n  \"note\": \"Order confirmed and ready for processing\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/order-id-here/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "order-id-here", "status"]
+            }
+          }
+        },
+        {
+          "name": "Update Payment Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentStatus\": \"completed\",\n  \"transactionId\": \"txn_123456789\",\n  \"note\": \"Payment received via Razorpay\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/order-id-here/payment",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "order-id-here", "payment"]
+            }
+          }
+        },
+        {
+          "name": "Get Order Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/admin/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "admin", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Recent Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/admin/recent?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "admin", "recent"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin Order Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/admin/search?customerEmail=john@example.com&status=pending&paymentStatus=pending&startDate=2024-01-01&endDate=2024-12-31&minAmount=10&maxAmount=1000&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "admin", "search"],
+              "query": [
+                {
+                  "key": "customerEmail",
+                  "value": "john@example.com"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                },
+                {
+                  "key": "paymentStatus",
+                  "value": "pending"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "minAmount",
+                  "value": "10"
+                },
+                {
+                  "key": "maxAmount",
+                  "value": "1000"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coupons - Admin",
+      "item": [
+        {
+          "name": "Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE20\",\n  \"discount\": 20,\n  \"expiresAt\": \"2024-12-31T23:59:59.000Z\",\n  \"maxUses\": 100,\n  \"minOrderAmount\": 50,\n  \"description\": \"20% off on orders above $50\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Get All Coupons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Get Coupon by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/coupons/coupon-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons", "coupon-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Update Coupon",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE25\",\n  \"discount\": 25,\n  \"expiresAt\": \"2024-12-31T23:59:59.000Z\",\n  \"maxUses\": 150,\n  \"minOrderAmount\": 75,\n  \"description\": \"25% off on orders above $75\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/coupons/coupon-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons", "coupon-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Delete Coupon",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/coupons/coupon-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons", "coupon-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Coupon Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/coupons/coupon-id-here/toggle",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons", "coupon-id-here", "toggle"]
+            }
+          }
+        },
+        {
+          "name": "Get Coupon Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/coupons/coupon-id-here/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons", "coupon-id-here", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Delete Coupons",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\"coupon-id-1\", \"coupon-id-2\", \"coupon-id-3\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/coupons/bulk/delete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons", "bulk", "delete"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Toggle Coupons",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\"coupon-id-1\", \"coupon-id-2\", \"coupon-id-3\"],\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/coupons/bulk/toggle",
+              "host": ["{{base_url}}"],
+              "path": ["api", "coupons", "bulk", "toggle"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get Product Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reviews/product-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", "product-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"product-id-here\",\n  \"rating\": 5,\n  \"comment\": \"Great product! Highly recommended.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reviews",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews"]
+            }
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated review comment\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reviews/review-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", "review-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reviews/review-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews", "review-id-here"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment Intent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 29999,\n  \"currency\": \"INR\",\n  \"orderId\": \"order-id-here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/create-intent",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "create-intent"]
+            }
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"pay_123456789\",\n  \"signature\": \"payment_signature_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/verify",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "verify"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shipping",
+      "item": [
+        {
+          "name": "Create Shipment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"order-id-here\",\n  \"pickupLocation\": \"Warehouse A\",\n  \"deliveryAddress\": {\n    \"name\": \"John Doe\",\n    \"phone\": \"+1234567890\",\n    \"address\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"pincode\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"packageDetails\": {\n    \"weight\": 1.5,\n    \"length\": 20,\n    \"breadth\": 15,\n    \"height\": 10\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipping/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipping", "create"]
+            }
+          }
+        },
+        {
+          "name": "Track Shipment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/shipping/track/shipment-id-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipping", "track", "shipment-id-here"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Endpoints",
+      "item": [
+        {
+          "name": "Test Simple Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"test@example.com\",\n  \"subject\": \"Test Email\",\n  \"text\": \"This is a test email\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/test/test-simple-email",
+              "host": ["{{base_url}}"],
+              "path": ["api", "test", "test-simple-email"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

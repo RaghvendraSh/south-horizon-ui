@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import * as yup from "yup";
 import "../../../styles/pages/Login.scss";
 import { ASSETS } from "../../../lib/assets";
@@ -12,6 +12,7 @@ interface LoginProps {
     fullName: string;
     email: string;
     password: string;
+    phone: string;
   }) => void;
   onLogin?: (data: { email: string; password: string }) => void;
 }
@@ -22,6 +23,11 @@ const signUpSchema = yup.object({
     .string()
     .email("Enter a valid email address")
     .required("Email is required"),
+  phone: yup
+    .string()
+    .matches(/^[0-9+\-\s()]+$/, "Enter a valid phone number")
+    .min(10, "Phone number must be at least 10 digits")
+    .required("Phone number is required"),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
@@ -49,10 +55,12 @@ const Login: React.FC<LoginProps> = ({
     fullName: "",
     email: "",
     password: "",
+    phone: "",
   });
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -63,29 +71,34 @@ const Login: React.FC<LoginProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
       if (isSignUp) {
         await signUpSchema.validate(formData);
-        onSignUp?.(formData);
+        await onSignUp?.(formData);
       } else {
         await loginSchema.validate({
           email: formData.email,
           password: formData.password,
         });
-        onLogin?.({ email: formData.email, password: formData.password });
+        await onLogin?.({ email: formData.email, password: formData.password });
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
     setError("");
-    setFormData({ fullName: "", email: "", password: "" });
+    setFormData({ fullName: "", email: "", password: "", phone: "" });
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -133,7 +146,11 @@ const Login: React.FC<LoginProps> = ({
               : "Welcome back, Login below to access your account."}
           </div>
 
-          <button className="login-drawer__google" onClick={onGoogleSignIn}>
+          <button
+            className="login-drawer__google"
+            onClick={onGoogleSignIn}
+            disabled={isLoading}
+          >
             <img
               src={ASSETS.HEADER.GOOGLE_ICON}
               alt="Google"
@@ -168,6 +185,18 @@ const Login: React.FC<LoginProps> = ({
               required
               className="login-drawer__input"
             />
+
+            {isSignUp && (
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
+                className="login-drawer__input"
+              />
+            )}
 
             <div className="login-drawer__password-wrapper">
               <input
@@ -241,8 +270,12 @@ const Login: React.FC<LoginProps> = ({
 
             {error && <div className="login-drawer__error">{error}</div>}
 
-            <button type="submit" className="login-drawer__continue">
-              {isSignUp ? "SIGN UP" : "LOGIN"}
+            <button
+              type="submit"
+              className="login-drawer__continue"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : isSignUp ? "SIGN UP" : "LOGIN"}
             </button>
           </form>
 

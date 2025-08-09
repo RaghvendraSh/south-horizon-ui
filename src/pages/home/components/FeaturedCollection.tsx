@@ -1,11 +1,32 @@
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import ArrowRight from "../../../components/icons/ArrowRight";
 import ProductCard from "../../../components/ProductCard";
 import "../../../styles/pages/FeaturedCollection.scss";
-import { products } from "../../../lib/consts";
+import { getProductsWithFilters } from "../../../api";
+import type { Product } from "../../../interfaces/products";
+import { normalizeProductsResponse } from "../../../utils/apiHelpers";
 
 const FeaturedCollection = () => {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        // Use API filtering for better performance
+        const response = await getProductsWithFilters({ isFeatured: true });
+        const productsArray = normalizeProductsResponse(response);
+        setFeaturedProducts(productsArray);
+      } catch (error) {
+        console.error("Failed to fetch featured products:", error);
+        setFeaturedProducts([]); // Set empty array on error
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
+
   const handleProductClick = (productId: string) => {
     console.log("Featured product clicked:", productId);
     // Add your product click logic here (e.g., navigate to product page)
@@ -15,9 +36,6 @@ const FeaturedCollection = () => {
     console.log("See all featured products");
     // Add navigation to featured products page
   };
-
-  // Get first 8 products for featured collection
-  const featuredProducts = products.slice(0, 8);
 
   return (
     <section className="featured-collection">
@@ -69,11 +87,12 @@ const FeaturedCollection = () => {
                 <SwiperSlide key={product.id}>
                   <ProductCard
                     id={product.id}
-                    title={product.title}
-                    description={product.description}
-                    price={product.price}
-                    image={product.image}
-                    category={product.category}
+                    title={product.name} // Corrected from 'title' to 'name'
+                    price={product.price.toString()}
+                    image={product.images[0]} // Corrected from 'image' to 'images[0]'
+                    category={product.category.name}
+                    availableColors={product.color}
+                    availableSizes={product.size}
                     onClick={handleProductClick}
                   />
                 </SwiperSlide>

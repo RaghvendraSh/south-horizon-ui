@@ -1,33 +1,48 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ArrowRight from "../../../components/icons/ArrowRight";
-import { ASSETS } from "../../../lib/assets";
+import { getAllCategories } from "../../../api";
+import type { Category } from "../../../interfaces/categories";
 import "../../../styles/pages/AgeCollection.scss";
 
 const AgeCollection = () => {
-  const handleCategoryClick = (category: string) => {
-    console.log(`Navigate to ${category} collection`);
-    // Add navigation logic here
-  };
-
-  const categories = [
+  const [categories, setCategories] = useState<Category[]>([
     {
       id: "men",
-      title: "SHOP FOR MEN",
-      image: ASSETS.PRODUCTS.MEN_IMG,
-      alt: "Men's Fashion Collection",
+      name: "SHOP FOR MEN",
+      image: "path/to/men-image.jpg",
     },
     {
       id: "women",
-      title: "SHOP FOR WOMEN",
-      image: ASSETS.PRODUCTS.WOMEN_IMG,
-      alt: "Women's Fashion Collection",
+      name: "SHOP FOR WOMEN",
+      image: "path/to/women-image.jpg",
     },
     {
       id: "kids",
-      title: "SHOP FOR KIDS",
-      image: ASSETS.PRODUCTS.BOY_IMG,
-      alt: "Kids' Fashion Collection",
+      name: "SHOP FOR KIDS",
+      image: "path/to/kids-image.jpg",
     },
-  ];
+  ]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getAllCategories();
+        if (response.length > 0) {
+          setCategories(response);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories, using dummy data:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleCategoryClick = (category: string) => {
+    navigate(`/${category}`); // Navigate to the specific category page
+  };
 
   return (
     <section className="age-collection">
@@ -38,7 +53,7 @@ const AgeCollection = () => {
               <div className="age-collection__image-container">
                 <img
                   src={category.image}
-                  alt={category.alt}
+                  alt={category.name}
                   className="age-collection__image"
                   loading="lazy"
                 />
@@ -48,7 +63,7 @@ const AgeCollection = () => {
                   className="age-collection__cta"
                   onClick={() => handleCategoryClick(category.id)}
                 >
-                  <span>{category.title}</span>
+                  <span>{category.name}</span>
                   <div className="age-collection__arrow">
                     <ArrowRight color="currentColor" />
                   </div>

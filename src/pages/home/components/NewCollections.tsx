@@ -1,14 +1,35 @@
+import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import ArrowRight from "../../../components/icons/ArrowRight";
 import ProductCard from "../../../components/ProductCard";
 import "../../../styles/pages/NewCollections.scss";
-import { products } from "../../../lib/consts";
+import { getProductsWithFilters } from "../../../api";
+import type { Product } from "../../../interfaces/products";
+import { normalizeProductsResponse } from "../../../utils/apiHelpers";
 
 const NewCollections = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        // Use API filtering for better performance
+        const response = await getProductsWithFilters({ isNew: true });
+        const productsArray = normalizeProductsResponse(response);
+        setProducts(productsArray);
+      } catch (error) {
+        console.error("Failed to fetch new products:", error);
+        setProducts([]); // Set empty array on error
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleProductClick = (productId: string) => {
     console.log("Product clicked:", productId);
-    // todo:  Add your product click logic here (e.g., navigate to product page)
+    // todo: Add your product click logic here (e.g., navigate to product page)
   };
 
   return (
@@ -61,11 +82,12 @@ const NewCollections = () => {
                   <SwiperSlide key={product.id}>
                     <ProductCard
                       id={product.id}
-                      title={product.title}
-                      description={product.description}
-                      price={product.price}
-                      image={product.image}
-                      category={product.category}
+                      title={product.name} // Corrected from 'title' to 'name'
+                      price={product.price.toString()}
+                      image={product.images[0]} // Corrected from 'image' to 'images[0]'
+                      category={product.category.name}
+                      availableColors={product.color}
+                      availableSizes={product.size}
                       onClick={handleProductClick}
                     />
                   </SwiperSlide>

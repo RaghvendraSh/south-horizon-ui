@@ -1,76 +1,108 @@
-import React from "react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { addToCart } from "../../api";
+import { getIsAuthenticated } from "../../store/slices/authSlice";
+import { showToast } from "../../utils/toastService";
 import "./ProductCard.scss";
 import { ASSETS } from "../../lib/assets";
+
+// Custom event for cart updates
+const CART_UPDATED_EVENT = "cartUpdated";
 
 interface ProductCardProps {
   id: string;
   title: string;
-  description: string;
   price: string;
   image: string;
   category: string;
+  availableColors?: string[];
+  availableSizes?: string[];
   onClick?: (id: string) => void;
 }
-
-import { useState } from "react";
-
-const COLORS = [
-  { name: "Beige", code: "#e7dbc7", isDisabled: false },
-  { name: "Pink", code: "#e94e77", isDisabled: false },
-  { name: "Navy", code: "#23263a", isDisabled: true },
-  { name: "Red", code: "#e94e4e", isDisabled: true },
-  { name: "Blue", code: "#3a5ca8", isDisabled: false },
-  { name: "Olive", code: "#bfc2a5", isDisabled: false },
-  { name: "Black", code: "#232323", isDisabled: true },
-];
-const SIZES = [
-  { label: "XXS", isDisabled: false },
-  { label: "XS", isDisabled: false },
-  { label: "S", isDisabled: false },
-  { label: "M", isDisabled: true },
-  { label: "L", isDisabled: false },
-  { label: "XL", isDisabled: false },
-  { label: "XXL", isDisabled: true },
-];
 
 const ProductCard: React.FC<ProductCardProps> = ({
   id,
   title,
-  description,
   price,
   image,
   category,
+  availableColors = [],
+  availableSizes = [],
   onClick,
 }) => {
   const [showOptions, setShowOptions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isAuthenticated = useSelector(getIsAuthenticated);
+
+  // Convert API arrays to format expected by component
+  const colors =
+    availableColors.length > 0
+      ? availableColors.map((color) => ({
+          code: color,
+          name: color,
+          isDisabled: false,
+        }))
+      : [];
+
+  const sizes =
+    availableSizes.length > 0
+      ? availableSizes.map((size) => ({
+          label: size,
+          isDisabled: false,
+        }))
+      : [];
+
   const [selectedColor, setSelectedColor] = useState(
-    COLORS.find((c) => !c.isDisabled)?.code || COLORS[0].code
+    colors.find((c) => !c.isDisabled)?.code || colors[0].code
   );
   const [selectedSize, setSelectedSize] = useState(
-    SIZES.find((s) => !s.isDisabled)?.label || SIZES[0].label
+    sizes.find((s) => !s.isDisabled)?.label || sizes[0].label
   );
 
   const handleBagClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowOptions(true);
   };
+
   const handleCollapse = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowOptions(false);
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Add to cart logic here
-    alert(
-      `Added to cart: ${title}, Color: ${selectedColor}, Size: ${selectedSize}`
-    );
+
+    if (!selectedColor || !selectedSize) {
+      showToast("Please select color and size", "error");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      showToast("Please login to add items to cart", "error");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await addToCart({ productId: id, quantity: 1 });
+      showToast(`Added ${title} to cart`, "success");
+      setShowOptions(false); // Close options after successful add
+
+      // Dispatch custom event to notify header to refresh cart
+      window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT));
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      showToast("Failed to add to cart", "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   const handleViewDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onClick) onClick(id);
   };
-  console.log(description, "description");
 
   return (
     <div className="product-card">
@@ -100,8 +132,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
         <h3 className="product-card__title">{title}</h3>
         <div className="product-card__details">
-          {/* <p className="product-card__description">{description}</p> */}
-          <div className="product-card__price">{price}</div>
+          <div className="product-card__price">₹ {price}</div>
         </div>
         <div
           className={`product-card__options-wrapper${
@@ -112,7 +143,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="product-card__option-group">
               <div className="product-card__option-label">COLOR</div>
               <div className="product-card__colors">
-                {COLORS.map((color) => (
+                {colors.map((color) => (
                   <button
                     key={color.code}
                     className={`product-card__color-swatch${
@@ -132,7 +163,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="product-card__option-group">
               <div className="product-card__option-label">SIZE</div>
               <div className="product-card__sizes">
-                {SIZES.map((size) => (
+                {sizes.map((size) => (
                   <button
                     key={size.label}
                     className={`product-card__size-btn${
@@ -159,8 +190,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <button
                 className="product-card__add-to-cart"
                 onClick={handleAddToCart}
+                disabled={isLoading}
               >
-                ADD TO CART
+                {isLoading ? "ADDING..." : "ADD TO CART"}
               </button>
             </div>
           </div>

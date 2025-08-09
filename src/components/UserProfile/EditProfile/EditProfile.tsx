@@ -1,23 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { UserSliceState } from "../../../store/slices/userSlice";
 import "./EditProfile.scss";
 
-interface User {
-  fullName: string;
-  email: string;
-  phone?: string;
-  avatar?: string;
-}
-
 interface EditProfileProps {
-  user: User;
-  onUpdate: (userData: User) => void;
+  user: UserSliceState;
+  onUpdate: (userData: UserSliceState) => void;
 }
 
 const EditProfile: React.FC<EditProfileProps> = ({ user, onUpdate }) => {
   const [formData, setFormData] = useState({
     fullName: user.fullName,
     email: user.email,
-    phone: user.phone || "",
+    phone: user.phone,
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -33,10 +27,10 @@ const EditProfile: React.FC<EditProfileProps> = ({ user, onUpdate }) => {
     e.preventDefault();
     // Validate and update user data
     onUpdate({
+      ...user,
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
-      avatar: user.avatar,
     });
     setIsEditing(false);
   };
@@ -45,7 +39,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ user, onUpdate }) => {
     setFormData({
       fullName: user.fullName,
       email: user.email,
-      phone: user.phone || "",
+      phone: user.phone,
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",

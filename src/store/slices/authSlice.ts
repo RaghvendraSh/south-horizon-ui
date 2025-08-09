@@ -5,12 +5,16 @@ export interface AuthSliceState {
   userKey: string;
   dataKey: string;
   accessToken: string;
+  authToken: string;
+  isAuthenticated: boolean;
 }
 
 const initialState: AuthSliceState = {
   userKey: "",
   dataKey: "",
   accessToken: "",
+  authToken: "",
+  isAuthenticated: false,
 };
 
 // If you are not using async thunks you can use the standalone `createSlice`.
@@ -33,6 +37,20 @@ export const authSlice = createSlice({
       state.accessToken = action.payload;
       return state;
     }),
+    setAuthToken: create.reducer((state, action: PayloadAction<string>) => {
+      state.authToken = action.payload;
+      state.isAuthenticated = !!action.payload;
+      return state;
+    }),
+    setAuthenticated: create.reducer(
+      (state, action: PayloadAction<boolean>) => {
+        state.isAuthenticated = action.payload;
+        return state;
+      }
+    ),
+    clearAuth: create.reducer(() => {
+      return { ...initialState };
+    }),
     clearAccessDetails: create.reducer(() => {
       return { ...initialState };
     }),
@@ -42,12 +60,25 @@ export const authSlice = createSlice({
   selectors: {
     getAccessToken: (state) => state.accessToken,
     getAccessDetails: (state) => state,
+    getAuthToken: (state) => state.authToken,
+    getIsAuthenticated: (state) => state.isAuthenticated,
   },
 });
 
 // Action creators are generated for each case reducer function.
-export const { setAccessToken, clearAccessDetails, setUserKey } =
-  authSlice.actions;
+export const {
+  setAccessToken,
+  clearAccessDetails,
+  setUserKey,
+  setAuthToken,
+  setAuthenticated,
+  clearAuth,
+} = authSlice.actions;
 
 // Selectors returned by `slice.selectors` take the root state as their first argument.
-export const { getAccessDetails, getAccessToken } = authSlice.selectors;
+export const {
+  getAccessDetails,
+  getAccessToken,
+  getAuthToken,
+  getIsAuthenticated,
+} = authSlice.selectors;

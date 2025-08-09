@@ -1,4 +1,3 @@
-import React from "react";
 import "./CartItem.scss";
 
 export interface CartProduct {
@@ -15,8 +14,9 @@ export interface CartItemProps {
   open: boolean;
   onClose: () => void;
   products: CartProduct[];
-  recommendations: CartProduct[];
+  // recommendations: CartProduct[];
   subtotal: number;
+  loading?: boolean;
   onQuantityChange: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
   onCheckout: () => void;
@@ -26,8 +26,9 @@ const CartItem: React.FC<CartItemProps> = ({
   open,
   onClose,
   products,
-  recommendations,
+  // recommendations,
   subtotal,
+  loading = false,
   onQuantityChange,
   onRemove,
   onCheckout,
@@ -68,104 +69,135 @@ const CartItem: React.FC<CartItemProps> = ({
           </button>
         </div>
         <div className="cart-drawer__ready">
-          <div className="cart-drawer__ready-title">Ready when you are.</div>
+          <div className="cart-drawer__ready-title">
+            {products.length > 0 ? "Ready when you are." : "Your cart is empty"}
+          </div>
           <div className="cart-drawer__ready-desc">
-            Your essentials for effortless dressing are in the bag.
+            {products.length > 0
+              ? "Your essentials for effortless dressing are in the bag."
+              : "Add some items to your cart to get started!"}
           </div>
         </div>
         <div className="cart-drawer__body">
-          <div className="cart-drawer__list">
-            {products.map((product) => (
-              <div className="cart-drawer__item" key={product.id}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="cart-drawer__item-img"
-                />
-                <div className="cart-drawer__item-info">
-                  <div className="cart-drawer__item-name">{product.name}</div>
-                  <div className="cart-drawer__item-meta">
-                    <span>Color: {product.color}</span>
-                    <span>Size: {product.size}</span>
+          {loading ? (
+            <div className="cart-drawer__loading">
+              <div className="cart-drawer__loading-message">
+                <p>Loading cart items...</p>
+              </div>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="cart-drawer__empty">
+              <div className="cart-drawer__empty-message">
+                <p>Your cart is currently empty</p>
+                <p>Start shopping to add items to your cart</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="cart-drawer__list">
+                {products.map((product: CartProduct) => (
+                  <div className="cart-drawer__item" key={product.id}>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="cart-drawer__item-img"
+                    />
+                    <div className="cart-drawer__item-info">
+                      <div className="cart-drawer__item-name">
+                        {product.name}
+                      </div>
+                      <div className="cart-drawer__item-meta">
+                        <span>Color: {product.color}</span>
+                        <span>Size: {product.size}</span>
+                      </div>
+                      <div className="cart-drawer__item-price">
+                        ₹{product.price}
+                      </div>
+                    </div>
+                    <div className="cart-drawer__item-actions">
+                      <div className="cart-drawer__qty-group">
+                        <button
+                          onClick={() =>
+                            onQuantityChange(product.id, product.quantity - 1)
+                          }
+                          disabled={product.quantity <= 1}
+                        >
+                          -
+                        </button>
+                        <span>{product.quantity}</span>
+                        <button
+                          onClick={() =>
+                            onQuantityChange(product.id, product.quantity + 1)
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                      <button
+                        className="cart-drawer__remove"
+                        onClick={() => onRemove(product.id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
-                  <div className="cart-drawer__item-price">
-                    ₹{product.price}
-                  </div>
-                </div>
-                <div className="cart-drawer__item-actions">
-                  <div className="cart-drawer__qty-group">
-                    <button
-                      onClick={() =>
-                        onQuantityChange(product.id, product.quantity - 1)
-                      }
-                      disabled={product.quantity <= 1}
-                    >
-                      -
-                    </button>
-                    <span>{product.quantity}</span>
-                    <button
-                      onClick={() =>
-                        onQuantityChange(product.id, product.quantity + 1)
-                      }
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    className="cart-drawer__remove"
-                    onClick={() => onRemove(product.id)}
-                  >
-                    Remove
+                ))}
+              </div>
+              {/* <div className="cart-drawer__recommend">
+                <div className="cart-drawer__recommend-header">
+                  <span className="cart-drawer__recommend-title">
+                    YOU MAY ALSO LIKE
+                  </span>
+                  <button className="cart-drawer__recommend-seeall">
+                    SEE ALL <span>&rarr;</span>
                   </button>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="cart-drawer__recommend">
-            <div className="cart-drawer__recommend-header">
-              <span className="cart-drawer__recommend-title">
-                YOU MAY ALSO LIKE
-              </span>
-              <button className="cart-drawer__recommend-seeall">
-                SEE ALL <span>&rarr;</span>
-              </button>
-            </div>
-            <div className="cart-drawer__recommend-slider">
-              {recommendations.map((rec) => (
-                <div className="cart-drawer__recommend-card" key={rec.id}>
-                  <img
-                    src={rec.image}
-                    alt={rec.name}
-                    className="cart-drawer__recommend-img"
-                  />
-                  <div className="cart-drawer__recommend-type">
-                    Men's {rec.name.includes("Short") ? "Shorts" : "Sweatshirt"}
-                  </div>
-                  <div className="cart-drawer__recommend-name">{rec.name}</div>
-                  <div className="cart-drawer__recommend-price">
-                    ₹{rec.price}
-                  </div>
+                <div className="cart-drawer__recommend-slider">
+                  {recommendations.map((rec: CartProduct) => (
+                    <div className="cart-drawer__recommend-card" key={rec.id}>
+                      <img
+                        src={rec.image}
+                        alt={rec.name}
+                        className="cart-drawer__recommend-img"
+                      />
+                      <div className="cart-drawer__recommend-type">
+                        Men's{" "}
+                        {rec.name.includes("Short") ? "Shorts" : "Sweatshirt"}
+                      </div>
+                      <div className="cart-drawer__recommend-name">
+                        {rec.name}
+                      </div>
+                      <div className="cart-drawer__recommend-price">
+                        ₹{rec.price}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="cart-drawer__recommend-nav">
-              <button className="cart-drawer__nav-btn">&lt;</button>
-              <button className="cart-drawer__nav-btn">&gt;</button>
-            </div>
-          </div>
-          <div className="cart-drawer__checkout">
-            <div className="cart-drawer__subtotal-row">
-              <span className="cart-drawer__subtotal-label">Subtotal</span>
-              <span className="cart-drawer__subtotal-value">₹{subtotal}</span>
-            </div>
-            <div className="cart-drawer__checkout-meta">
-              <span>Shipping</span>
-              <span>Duties, Taxes & Shipping at Checkout</span>
-            </div>
-            <button className="cart-drawer__checkout-btn" onClick={onCheckout}>
-              CHECKOUT
-            </button>
-          </div>
+                <div className="cart-drawer__recommend-nav">
+                  <button className="cart-drawer__nav-btn">&lt;</button>
+                  <button className="cart-drawer__nav-btn">&gt;</button>
+                </div>
+              </div> */}
+              <div className="cart-drawer__checkout">
+                <div className="cart-drawer__subtotal-row">
+                  <span className="cart-drawer__subtotal-label">Subtotal</span>
+                  <span className="cart-drawer__subtotal-value">
+                    ₹{subtotal}
+                  </span>
+                </div>
+                <div className="cart-drawer__checkout-meta">
+                  <span>Shipping</span>
+                  <span>Duties, Taxes & Shipping at Checkout</span>
+                </div>
+                <button
+                  className="cart-drawer__checkout-btn"
+                  onClick={onCheckout}
+                >
+                  CHECKOUT
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

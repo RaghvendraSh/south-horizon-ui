@@ -1,34 +1,45 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FC } from "react";
+import { useDispatch } from "react-redux";
 import "./UserProfile.scss";
 import AddressManager from "./AddressManager/AddressManager";
 import OrderHistory from "./OrderHistory/OrderHistory";
 import EditProfile from "./EditProfile/EditProfile";
+import type { UserSliceState } from "../../store/slices/userSlice";
+import { setUserDetails } from "../../store/slices/userSlice";
+import { showToast } from "../../utils/toastService";
 
 interface UserProfileProps {
   open: boolean;
   onClose: () => void;
-  user: {
-    fullName: string;
-    email: string;
-    phone?: string;
-    avatar?: string;
-  };
+  user: UserSliceState;
   onLogout: () => void;
 }
 
 type ActiveTab = "profile" | "addresses" | "orders";
 
-const UserProfile: React.FC<UserProfileProps> = ({
+const UserProfile: FC<UserProfileProps> = ({
   open,
   onClose,
   user,
   onLogout,
-}) => {
+}: UserProfileProps) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("profile");
+  const dispatch = useDispatch();
+
+  const handleTabClick = (tab: ActiveTab) => {
+    setActiveTab(tab);
+    // Data fetching is handled by useEffect in each component when they mount
+  };
 
   const handleLogout = () => {
     onLogout();
     onClose();
+  };
+
+  const handleUserUpdate = (userData: UserSliceState) => {
+    dispatch(setUserDetails(userData));
+    showToast("Profile updated successfully!", "success");
   };
 
   const handleOverlayClick = () => {
@@ -110,7 +121,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   const renderContent = () => {
     switch (activeTab) {
       case "profile":
-        return <EditProfile user={user} onUpdate={() => {}} />;
+        return <EditProfile user={user} onUpdate={handleUserUpdate} />;
       case "addresses":
         return <AddressManager />;
       case "orders":
@@ -163,7 +174,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                   className={`user-profile__nav-item ${
                     activeTab === item.key ? "active" : ""
                   }`}
-                  onClick={() => setActiveTab(item.key)}
+                  onClick={() => handleTabClick(item.key)}
                 >
                   <span className="user-profile__nav-icon">{item.icon}</span>
                   <span className="user-profile__nav-label">{item.label}</span>

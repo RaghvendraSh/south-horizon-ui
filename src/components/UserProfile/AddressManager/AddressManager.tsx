@@ -1,45 +1,18 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  getUserAddresses,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  setDefaultAddress,
+} from "../../../api";
+import type { Address, CreateAddressRequest } from "../../../api/addresses";
+import { showToast } from "../../../utils/toastService";
 import "./AddressManager.scss";
 
-interface Address {
-  id: string;
-  name: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  isDefault: boolean;
-  type: "home" | "work" | "other";
-}
-
 const AddressManager: React.FC = () => {
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: "1",
-      name: "John Doe",
-      phone: "+91 9876543210",
-      addressLine1: "123 Main Street",
-      addressLine2: "Apartment 4B",
-      city: "Mumbai",
-      state: "Maharashtra",
-      pincode: "400001",
-      isDefault: true,
-      type: "home",
-    },
-    {
-      id: "2",
-      name: "John Doe",
-      phone: "+91 9876543210",
-      addressLine1: "456 Business Avenue",
-      city: "Mumbai",
-      state: "Maharashtra",
-      pincode: "400002",
-      isDefault: false,
-      type: "work",
-    },
-  ]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [formData, setFormData] = useState<Omit<Address, "id">>({
@@ -53,6 +26,102 @@ const AddressManager: React.FC = () => {
     isDefault: false,
     type: "home",
   });
+
+  // Fetch addresses on component mount
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      setLoading(true);
+      const fetchedAddresses = await getUserAddresses();
+      setAddresses(fetchedAddresses);
+    } catch (error) {
+      console.error("Failed to fetch addresses:", error);
+      showToast("Failed to load addresses", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveAddress = async () => {
+    try {
+      setLoading(true);
+      if (editingAddress) {
+        // Update existing address
+        const updatedAddress = await updateAddress({
+          ...formData,
+          id: editingAddress.id,
+        });
+        setAddresses((prev) =>
+          prev.map((addr) =>
+            addr.id === editingAddress.id ? updatedAddress : addr
+          )
+        );
+        showToast("Address updated successfully!", "success");
+      } else {
+        // Create new address
+        const newAddress = await createAddress(
+          formData as CreateAddressRequest
+        );
+        setAddresses((prev) => [...prev, newAddress]);
+        showToast("Address added successfully!", "success");
+      }
+      resetForm();
+    } catch (error) {
+      console.error("Failed to save address:", error);
+      showToast("Failed to save address", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAddress = async (id: string) => {
+    try {
+      setLoading(true);
+      await deleteAddress(id);
+      setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+      showToast("Address deleted successfully!", "success");
+    } catch (error) {
+      console.error("Failed to delete address:", error);
+      showToast("Failed to delete address", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSetDefault = async (id: string) => {
+    try {
+      setLoading(true);
+      await setDefaultAddress(id);
+      setAddresses((prev) =>
+        prev.map((addr) => ({ ...addr, isDefault: addr.id === id }))
+      );
+      showToast("Default address updated!", "success");
+    } catch (error) {
+      console.error("Failed to set default address:", error);
+      showToast("Failed to update default address", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      phone: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      pincode: "",
+      isDefault: false,
+      type: "home",
+    });
+    setShowAddForm(false);
+    setEditingAddress(null);
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -68,39 +137,7 @@ const AddressManager: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (editingAddress) {
-      // Update existing address
-      setAddresses((prev) =>
-        prev.map((addr) =>
-          addr.id === editingAddress.id
-            ? { ...formData, id: editingAddress.id }
-            : addr
-        )
-      );
-    } else {
-      // Add new address
-      const newAddress: Address = {
-        ...formData,
-        id: Date.now().toString(),
-      };
-      setAddresses((prev) => [...prev, newAddress]);
-    }
-
-    // Reset form
-    setFormData({
-      name: "",
-      phone: "",
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      state: "",
-      pincode: "",
-      isDefault: false,
-      type: "home",
-    });
-    setShowAddForm(false);
-    setEditingAddress(null);
+    handleSaveAddress();
   };
 
   const handleEdit = (address: Address) => {
@@ -120,16 +157,11 @@ const AddressManager: React.FC = () => {
   };
 
   const handleDelete = (id: string) => {
-    setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+    handleDeleteAddress(id);
   };
 
-  const handleSetDefault = (id: string) => {
-    setAddresses((prev) =>
-      prev.map((addr) => ({
-        ...addr,
-        isDefault: addr.id === id,
-      }))
-    );
+  const handleSetDefaultClick = (id: string) => {
+    handleSetDefault(id);
   };
 
   const handleCancel = () => {
@@ -299,55 +331,65 @@ const AddressManager: React.FC = () => {
       )}
 
       <div className="address-manager__list">
-        {addresses.map((address) => (
-          <div key={address.id} className="address-manager__item">
-            <div className="address-manager__item-header">
-              <div className="address-manager__item-type">
-                <span className="address-manager__type-badge">
-                  {address.type.toUpperCase()}
-                </span>
-                {address.isDefault && (
-                  <span className="address-manager__default-badge">
-                    DEFAULT
+        {loading ? (
+          <div className="address-manager__loading">
+            <p>Loading addresses...</p>
+          </div>
+        ) : addresses.length === 0 ? (
+          <div className="address-manager__no-data">
+            <p>No addresses found. Add your first address to get started!</p>
+          </div>
+        ) : (
+          addresses.map((address) => (
+            <div key={address.id} className="address-manager__item">
+              <div className="address-manager__item-header">
+                <div className="address-manager__item-type">
+                  <span className="address-manager__type-badge">
+                    {address.type.toUpperCase()}
                   </span>
-                )}
-              </div>
-              <div className="address-manager__item-actions">
-                <button
-                  className="address-manager__action-btn"
-                  onClick={() => handleEdit(address)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="address-manager__action-btn delete"
-                  onClick={() => handleDelete(address.id)}
-                >
-                  Delete
-                </button>
-                {!address.isDefault && (
+                  {address.isDefault && (
+                    <span className="address-manager__default-badge">
+                      DEFAULT
+                    </span>
+                  )}
+                </div>
+                <div className="address-manager__item-actions">
                   <button
                     className="address-manager__action-btn"
-                    onClick={() => handleSetDefault(address.id)}
+                    onClick={() => handleEdit(address)}
                   >
-                    Set Default
+                    Edit
                   </button>
-                )}
+                  <button
+                    className="address-manager__action-btn delete"
+                    onClick={() => handleDelete(address.id)}
+                  >
+                    Delete
+                  </button>
+                  {!address.isDefault && (
+                    <button
+                      className="address-manager__action-btn"
+                      onClick={() => handleSetDefaultClick(address.id)}
+                    >
+                      Set Default
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="address-manager__item-content">
+                <p className="address-manager__name">{address.name}</p>
+                <p className="address-manager__address">
+                  {address.addressLine1}
+                  {address.addressLine2 && `, ${address.addressLine2}`}
+                </p>
+                <p className="address-manager__location">
+                  {address.city}, {address.state} - {address.pincode}
+                </p>
+                <p className="address-manager__phone">{address.phone}</p>
               </div>
             </div>
-            <div className="address-manager__item-content">
-              <p className="address-manager__name">{address.name}</p>
-              <p className="address-manager__address">
-                {address.addressLine1}
-                {address.addressLine2 && `, ${address.addressLine2}`}
-              </p>
-              <p className="address-manager__location">
-                {address.city}, {address.state} - {address.pincode}
-              </p>
-              <p className="address-manager__phone">{address.phone}</p>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
