@@ -8,7 +8,6 @@ import {
   getCart,
   updateCartItem,
   removeFromCart,
-  placeOrder,
   getProductById,
 } from "../../api";
 import type {
@@ -16,11 +15,7 @@ import type {
   LoginUserRequest,
   AuthResponse,
 } from "../../interfaces/auth";
-import type { PlaceOrderRequest } from "../../interfaces/orders";
 import { showToast } from "../../utils/toastService";
-import RazorpayPayment, {
-  type PaymentData,
-} from "../RazorpayPayment/RazorpayPayment";
 import {
   setAuthToken,
   clearAuth,
@@ -284,9 +279,7 @@ const Header = () => {
     }
   };
 
-  const handleCheckout = (
-    initiatePayment?: (data: PaymentData) => Promise<void>
-  ) => {
+  const handleCheckout = () => {
     if (cartProducts.length === 0) {
       showToast("Your cart is empty", "error");
       return;
@@ -299,67 +292,9 @@ const Header = () => {
       return;
     }
 
-    if (!initiatePayment) {
-      showToast("Payment system not ready", "error");
-      return;
-    }
-
-    // Navigate to checkout page or open checkout modal
-    // For now, we'll create a simple order placement
-    handlePlaceOrder(initiatePayment);
-  };
-
-  const handlePlaceOrder = async (
-    initiatePayment: (data: PaymentData) => Promise<void>
-  ) => {
-    try {
-      // This is a simplified order placement
-      // In real implementation, you'd collect shipping address and payment method
-      const orderData: PlaceOrderRequest = {
-        shippingAddress: {
-          street: "123 Main St", // This should come from user's selected address
-          city: "Sample City",
-          state: "Sample State",
-          zipCode: "12345",
-          country: "India",
-        },
-        paymentMethod: "razorpay", // This should be selected by user
-      };
-
-      const order = await placeOrder(orderData);
-
-      // Use the new payment component
-      const paymentData: PaymentData = {
-        amount: cartTotals.finalTotal,
-        orderId: order.id,
-        customerInfo: {
-          name: currentUser?.fullName || "",
-          email: currentUser?.email || "",
-          phone: currentUser?.phone || "",
-        },
-        description: "Order Payment",
-        onSuccess: (response) => {
-          console.log("Payment successful:", response);
-          showToast("Order placed successfully!", "success");
-          setCartProducts([]);
-          setCartTotals({ total: 0, discount: 0, finalTotal: 0 });
-          setIsCartDrawerOpen(false);
-          // You can also redirect to order confirmation page
-        },
-        onCancel: () => {
-          showToast("Payment cancelled", "error");
-        },
-        onError: (error) => {
-          console.error("Payment failed:", error);
-          showToast("Payment failed. Please try again.", "error");
-        },
-      };
-
-      await initiatePayment(paymentData);
-    } catch (error) {
-      console.error("Failed to place order:", error);
-      showToast("Failed to place order", "error");
-    }
+    // Close cart drawer and navigate to checkout page
+    setIsCartDrawerOpen(false);
+    navigate("/checkout");
   };
 
   // Auth handlers
@@ -634,21 +569,17 @@ const Header = () => {
         onClose={() => setIsSearchDrawerOpen(false)}
       />
 
-      <RazorpayPayment>
-        {(initiatePayment) => (
-          <CartItem
-            open={isCartDrawerOpen}
-            onClose={() => setIsCartDrawerOpen(false)}
-            products={cartProducts}
-            // recommendations={recommendations}
-            subtotal={cartTotals.finalTotal}
-            loading={cartLoading}
-            onQuantityChange={handleQuantityChange}
-            onRemove={handleRemove}
-            onCheckout={() => handleCheckout(initiatePayment)}
-          />
-        )}
-      </RazorpayPayment>
+      <CartItem
+        open={isCartDrawerOpen}
+        onClose={() => setIsCartDrawerOpen(false)}
+        products={cartProducts}
+        // recommendations={recommendations}
+        subtotal={cartTotals.finalTotal}
+        loading={cartLoading}
+        onQuantityChange={handleQuantityChange}
+        onRemove={handleRemove}
+        onCheckout={handleCheckout}
+      />
 
       {/* Login Drawer */}
       <Login

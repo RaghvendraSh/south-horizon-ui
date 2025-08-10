@@ -38,7 +38,7 @@ export const getUserAddresses = (): Promise<Address[]> => {
 
 // Create Address
 export const createAddress = (data: CreateAddressRequest): Promise<Address> => {
-  return authorizedApiCall("/api/addresses", data, "POST", {
+  return authorizedApiCall("/api/profile/addresses", data, "POST", {
     success: "Address added successfully!",
     error: "Failed to add address.",
   });
@@ -54,16 +54,26 @@ export const updateAddress = (data: UpdateAddressRequest): Promise<Address> => {
 
 // Delete Address
 export const deleteAddress = (id: string): Promise<void> => {
-  return authorizedApiCall(`/api/addresses/${id}`, undefined, "DELETE", {
-    success: "Address deleted successfully!",
-    error: "Failed to delete address.",
-  });
+  return authorizedApiCall(
+    `/api/profile/addresses/${id}`,
+    undefined,
+    "DELETE",
+    {
+      success: "Address deleted successfully!",
+      error: "Failed to delete address.",
+    }
+  );
 };
 
 // Set Default Address
 export const setDefaultAddress = (id: string): Promise<Address> => {
-  return authorizedApiCall(`/api/addresses/${id}/default`, undefined, "PATCH", {
-    success: "Default address updated!",
-    error: "Failed to update default address.",
-  });
+  return authorizedApiCall(
+    `/api/profile/addresses/${id}/default`,
+    undefined,
+    "PATCH",
+    {
+      success: "Default address updated!",
+      error: "Failed to update default address.",
+    }
+  );
 };

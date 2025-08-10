@@ -9,10 +9,12 @@
 
   // Text Colors
   --text-primary: #000000;
+  --primary-color: #000000;
   --text-secondary: #374151;
   --text-muted: #6b7280;
   --text-light-gray: #6d6d6d;
   --text-white: #ffffff;
+  --primary-hover: #ffffff;
 
   // Interactive Colors
   --hover-bg: #f9fafb;
@@ -73,7 +75,7 @@ $font-sizes: (
   // 72px
   8xl: 6rem,
   // 96px
-  9xl: 8rem // 128px,,,,,,,,,,,,,,,,
+  9xl: 8rem // 128px,,,,,,,,,,,,,,,,,,
 );
 
 // Mixin to apply font family with specific weight

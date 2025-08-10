@@ -5,6 +5,7 @@ import MenPage from "../pages/men/MenPage";
 import WomenPage from "../pages/women/WomenPage";
 import KidsPage from "../pages/kids/KidsPage";
 import HorizonXPage from "../pages/horizon-x/HorizonXPage";
+import Checkout from "../pages/Checkout/Checkout";
 
 export const AllRoutes = () => {
   return (
@@ -14,6 +15,7 @@ export const AllRoutes = () => {
       <Route path="/women" element={<WomenPage />} />
       <Route path="/kids" element={<KidsPage />} />
       <Route path="/horizon-x" element={<HorizonXPage />} />
+      <Route path="/checkout" element={<Checkout />} />
     </Routes>
   );
 };
