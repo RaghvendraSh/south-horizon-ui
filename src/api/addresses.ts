@@ -31,7 +31,7 @@ export interface UpdateAddressRequest extends CreateAddressRequest {
 
 // Get User Addresses
 export const getUserAddresses = (): Promise<Address[]> => {
-  return authorizedApiCall("/api/addresses", undefined, "GET", {
+  return authorizedApiCall("/api/profile/addresses", undefined, "GET", {
     error: "Failed to fetch addresses.",
   });
 };
@@ -62,7 +62,7 @@ export const deleteAddress = (id: string): Promise<void> => {
 
 // Set Default Address
 export const setDefaultAddress = (id: string): Promise<Address> => {
-  return authorizedApiCall(`/api/addresses/${id}/default`, undefined, "PUT", {
+  return authorizedApiCall(`/api/addresses/${id}/default`, undefined, "PATCH", {
     success: "Default address updated!",
     error: "Failed to update default address.",
   });

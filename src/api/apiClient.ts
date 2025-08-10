@@ -45,7 +45,7 @@ const handleError = (error: AxiosError | any) => {
 export const sendApiRequest = async (
   url: string,
   data?: any,
-  method: "GET" | "POST" | "PUT" | "DELETE" = "POST",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "POST",
   headers: Record<string, string> = defaultHeaders,
   toastMessages?: { success?: string; error?: string }
 ) => {
@@ -76,7 +76,7 @@ export const sendApiRequest = async (
 export const authorizedApiCall = (
   url: string,
   data?: any,
-  method: "GET" | "POST" | "PUT" | "DELETE" = "POST",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "POST",
   toastMessages?: { success?: string; error?: string }
 ) => {
   const accessDetails: any = store.getState().auth;
@@ -92,7 +92,7 @@ export const authorizedApiCall = (
 export const unauthorizedApiCall = (
   url: string,
   data?: any,
-  method: "GET" | "POST" | "PUT" | "DELETE" = "POST",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "POST",
   toastMessages?: { success?: string; error?: string }
 ) => {
   return sendApiRequest(url, data, method, defaultHeaders, toastMessages);

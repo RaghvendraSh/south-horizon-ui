@@ -100,7 +100,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({ children }) => {
         await loadRazorpayScript();
 
         const options: RazorpayOptions = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID || "your_razorpay_key_id",
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: data.amount * 100, // Convert to paise
           currency: "INR",
           name: "South Horizon",
