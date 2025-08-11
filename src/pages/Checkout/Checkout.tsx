@@ -258,7 +258,7 @@ const Checkout: React.FC = () => {
     );
   }
 
-  // Debug: Always show cart information
+  // Debug: cart information
   console.log("=== CHECKOUT RENDER DEBUG ===");
   console.log("cart:", cart);
   console.log("cart?.items:", cart?.items);
@@ -272,7 +272,7 @@ const Checkout: React.FC = () => {
         <h2>Your cart is empty</h2>
         <p>You haven't added any items to your cart yet.</p>
         {/* Show debug info only in development */}
-        {import.meta.env.DEV && (
+        {/* {import.meta.env.DEV && (
           <details
             style={{
               marginTop: "1rem",
@@ -310,7 +310,7 @@ const Checkout: React.FC = () => {
               )}
             </div>
           </details>
-        )}
+        )} */}
         <button
           onClick={() => navigate("/")}
           className="btn-primary"
