@@ -18,6 +18,7 @@ import RazorpayPayment, {
 import AddressSelectionModal from "./components/AddressSelectionModal";
 import CouponModal from "./components/CouponModal";
 import "./Checkout.scss";
+import { ROUTES } from "../../lib/consts";
 
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Checkout: React.FC = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       showToast("Please login to access checkout", "error");
-      navigate("/");
+      navigate(ROUTES.HOME);
       return;
     }
 

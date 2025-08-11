@@ -11,11 +11,11 @@ export const AllRoutes = () => {
   return (
     <Routes key={location.pathname}>
       <Route path={ROUTES.HOME} element={<Home />} />
-      <Route path="/men" element={<MenPage />} />
-      <Route path="/women" element={<WomenPage />} />
-      <Route path="/kids" element={<KidsPage />} />
-      <Route path="/horizon-x" element={<HorizonXPage />} />
-      <Route path="/checkout" element={<Checkout />} />
+      <Route path={ROUTES.MEN} element={<MenPage />} />
+      <Route path={ROUTES.WOMEN} element={<WomenPage />} />
+      <Route path={ROUTES.KIDS} element={<KidsPage />} />
+      <Route path={ROUTES.HORIZON_X} element={<HorizonXPage />} />
+      <Route path={ROUTES.CHECKOUT} element={<Checkout />} />
     </Routes>
   );
 };

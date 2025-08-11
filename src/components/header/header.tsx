@@ -33,6 +33,7 @@ import SearchProduct from "../searchProduct/SearchProduct";
 import CartItem, { type CartProduct } from "../cartItem/CartItem";
 import Login from "../../pages/home/components/Login";
 import UserProfile from "../UserProfile/UserProfile";
+import { ROUTES } from "../../lib/consts";
 
 interface NavItem {
   title: string;
@@ -294,7 +295,7 @@ const Header = () => {
 
     // Close cart drawer and navigate to checkout page
     setIsCartDrawerOpen(false);
-    navigate("/checkout");
+    navigate(ROUTES.CHECKOUT);
   };
 
   // Auth handlers
