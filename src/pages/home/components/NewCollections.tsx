@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import ArrowRight from "../../../components/icons/ArrowRight";
@@ -7,8 +8,10 @@ import "../../../styles/pages/NewCollections.scss";
 import { getProductsWithFilters } from "../../../api";
 import type { Product } from "../../../interfaces/products";
 import { normalizeProductsResponse } from "../../../utils/apiHelpers";
+import { ROUTES } from "../../../lib/consts";
 
 const NewCollections = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -32,6 +35,10 @@ const NewCollections = () => {
     // todo: Add your product click logic here (e.g., navigate to product page)
   };
 
+  const handleShopAll = () => {
+    navigate(ROUTES.NEW_COLLECTIONS);
+  };
+
   return (
     <section className="new-collections">
       <div className="new-collections__container">
@@ -43,7 +50,7 @@ const NewCollections = () => {
               Collection
             </h2>
             <p className="new-collections__subtitle">Handpicked for you</p>
-            <button className="new-collections__cta">
+            <button className="new-collections__cta" onClick={handleShopAll}>
               <span>Shop All</span>
               <div className="new-collections__arrow">
                 <ArrowRight color="currentColor" />

@@ -7,6 +7,9 @@ export const ROUTES = {
   WOMEN: "/women",
   KIDS: "/kids",
   HORIZON_X: "/horizon-x",
+  TOP_COLLECTIONS: "/top-collections",
+  FEATURED_HORIZON: "/featured-horizon",
+  NEW_COLLECTIONS: "/new-collections",
 };
 
 export interface Product {

@@ -6,6 +6,9 @@ import WomenPage from "../pages/women/WomenPage";
 import KidsPage from "../pages/kids/KidsPage";
 import HorizonXPage from "../pages/horizon-x/HorizonXPage";
 import Checkout from "../pages/Checkout/Checkout";
+import TopCollectionsPage from "../pages/collections/TopCollectionsPage";
+import FeaturedHorizonPage from "../pages/collections/FeaturedHorizonPage";
+import NewCollectionsPage from "../pages/collections/NewCollectionsPage";
 
 export const AllRoutes = () => {
   return (
@@ -16,6 +19,9 @@ export const AllRoutes = () => {
       <Route path={ROUTES.KIDS} element={<KidsPage />} />
       <Route path={ROUTES.HORIZON_X} element={<HorizonXPage />} />
       <Route path={ROUTES.CHECKOUT} element={<Checkout />} />
+      <Route path={ROUTES.TOP_COLLECTIONS} element={<TopCollectionsPage />} />
+      <Route path={ROUTES.FEATURED_HORIZON} element={<FeaturedHorizonPage />} />
+      <Route path={ROUTES.NEW_COLLECTIONS} element={<NewCollectionsPage />} />
     </Routes>
   );
 };

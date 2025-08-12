@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import ArrowRight from "../../../components/icons/ArrowRight";
@@ -7,8 +8,10 @@ import "../../../styles/pages/FeaturedCollection.scss";
 import { getProductsWithFilters } from "../../../api";
 import type { Product } from "../../../interfaces/products";
 import { normalizeProductsResponse } from "../../../utils/apiHelpers";
+import { ROUTES } from "../../../lib/consts";
 
 const FeaturedCollection = () => {
+  const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -33,8 +36,7 @@ const FeaturedCollection = () => {
   };
 
   const handleSeeAll = () => {
-    console.log("See all featured products");
-    // Add navigation to featured products page
+    navigate(ROUTES.FEATURED_HORIZON);
   };
 
   return (

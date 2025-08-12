@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import ArrowRight from "../../../components/icons/ArrowRight";
@@ -7,8 +8,10 @@ import "../../../styles/pages/TopCollection.scss";
 import { getProductsWithFilters } from "../../../api";
 import type { Product } from "../../../interfaces/products";
 import { normalizeProductsResponse } from "../../../utils/apiHelpers";
+import { ROUTES } from "../../../lib/consts";
 
 const TopCollection = () => {
+  const navigate = useNavigate();
   const [topProducts, setTopProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -33,8 +36,7 @@ const TopCollection = () => {
   };
 
   const handleSeeAll = () => {
-    console.log("See all top products");
-    // Add navigation to top products page
+    navigate(ROUTES.TOP_COLLECTIONS);
   };
 
   return (

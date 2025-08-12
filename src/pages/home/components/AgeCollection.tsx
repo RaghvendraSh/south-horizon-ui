@@ -4,23 +4,24 @@ import ArrowRight from "../../../components/icons/ArrowRight";
 import { getAllCategories } from "../../../api";
 import type { Category } from "../../../interfaces/categories";
 import "../../../styles/pages/AgeCollection.scss";
+import { ASSETS } from "../../../lib/assets";
 
 const AgeCollection = () => {
   const [categories, setCategories] = useState<Category[]>([
     {
       id: "men",
       name: "SHOP FOR MEN",
-      image: "path/to/men-image.jpg",
+      image: ASSETS.PRODUCTS.MEN_IMG,
     },
     {
       id: "women",
       name: "SHOP FOR WOMEN",
-      image: "path/to/women-image.jpg",
+      image: ASSETS.PRODUCTS.WOMEN_IMG,
     },
     {
       id: "kids",
       name: "SHOP FOR KIDS",
-      image: "path/to/kids-image.jpg",
+      image: ASSETS.PRODUCTS.BOY_IMG,
     },
   ]);
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const AgeCollection = () => {
   }, []);
 
   const handleCategoryClick = (category: string) => {
-    navigate(`/${category}`); // Navigate to the specific category page
+    navigate(`/${category}`);
   };
 
   return (
