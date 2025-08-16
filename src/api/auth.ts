@@ -1,4 +1,5 @@
 import { unauthorizedApiCall } from "./apiClient";
+import type { AuthResponse } from "../interfaces/auth";
 
 // User Registration
 export const registerUser = (data: {
@@ -38,10 +39,10 @@ export const verifyPhoneOtp = (data: { phone: string; otp: string }) => {
 };
 
 // Google OAuth
-export const googleOAuth = (): Promise<void> => {
-  return unauthorizedApiCall("/api/auth/google", undefined, "GET", {
-    success: "Redirecting to Google OAuth...",
-    error: "Failed to initiate Google OAuth.",
+export const googleOAuth = (credential: string): Promise<AuthResponse> => {
+  return unauthorizedApiCall("/api/auth/google", { credential }, "POST", {
+    success: "Google login successful!",
+    error: "Failed to authenticate with Google.",
   });
 };
 

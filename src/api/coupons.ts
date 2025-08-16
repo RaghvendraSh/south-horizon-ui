@@ -21,7 +21,7 @@ export interface AvailableCouponsResponse {
 
 // Get Available Coupons for User
 export const getAvailableCoupons = (): Promise<AvailableCouponsResponse> => {
-  return authorizedApiCall("/api/coupons/available", undefined, "GET", {
+  return authorizedApiCall("/api/coupons", undefined, "GET", {
     error: "Failed to fetch available coupons.",
   });
 };

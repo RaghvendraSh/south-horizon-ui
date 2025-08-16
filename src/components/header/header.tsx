@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { googleLogout } from "@react-oauth/google";
+
 import {
   registerUser,
   loginUser,
-  googleOAuth,
   getCart,
   updateCartItem,
   removeFromCart,
@@ -364,17 +365,51 @@ const Header = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await googleOAuth();
-      showToast("Google sign-in initiated", "success");
-      // Note: Google OAuth typically involves redirects or popup windows
-      // The actual user data would be handled by the OAuth callback
-    } catch (error) {
-      console.error("Google sign-in failed:", error);
-      showToast("Google sign-in failed. Please try again.", "error");
-    }
+  // Handle Google Sign-In with redirect flow
+  const handleGoogleSignIn = (): void => {
+    console.log("Initiating Google Sign-In redirect...");
+    // Redirect to backend OAuth endpoint
+    window.location.href = "https://api.southhorizon.in/api/auth/google";
   };
+
+  // Handle Google OAuth callback from backend
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const userData = urlParams.get("user");
+
+    if (token && userData) {
+      try {
+        
+        // Parse user data from URL parameter
+        const parsedUserData = JSON.parse(decodeURIComponent(userData));
+
+        console.log("Google OAuth callback - Token:", token);
+        console.log("Google OAuth callback - User data:", parsedUserData);
+
+        const userInfo = {
+          name: parsedUserData.name || parsedUserData.given_name || "User",
+          email: parsedUserData.email,
+          mobile: parsedUserData.phone || "",
+          fullName: parsedUserData.name || parsedUserData.given_name || "User",
+          phone: parsedUserData.phone || "",
+          avatar: parsedUserData.picture || "",
+        };
+
+        dispatch(setUserDetails(userInfo));
+        dispatch(setAuthToken(token));
+        setIsLoginDrawerOpen(false);
+        showToast("Google sign-in successful!", "success");
+
+        // Clean up URL parameters
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      } catch (error) {
+        console.error("Failed to parse OAuth callback data:", error);
+        showToast("Google sign-in failed. Please try again.", "error");
+      }
+    }
+  }, [dispatch]);
 
   const handleLogout = () => {
     dispatch(clearUserDetails());
@@ -382,6 +417,7 @@ const Header = () => {
     setIsProfileOpen(false);
     showToast("Logged out successfully", "success");
     console.log("User logged out");
+    googleLogout();
   };
 
   const handleUserButtonClick = () => {
