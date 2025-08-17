@@ -17,7 +17,9 @@ export interface Product {
   };
 }
 
-export type GetProductsResponse = Product[];
+export type GetProductsResponse = {
+  products: Product[];
+};
 
 export interface ProductFilters {
   category?: string;

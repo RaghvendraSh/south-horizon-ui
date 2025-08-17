@@ -4,7 +4,6 @@ import { addToCart } from "../../api";
 import { getIsAuthenticated } from "../../store/slices/authSlice";
 import { showToast } from "../../utils/toastService";
 import "./ProductCard.scss";
-import { ASSETS } from "../../lib/assets";
 
 // Custom event for cart updates
 const CART_UPDATED_EVENT = "cartUpdated";
@@ -25,7 +24,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   title,
   price,
   image,
-  category,
   availableColors = [],
   availableSizes = [],
   onClick,
@@ -111,7 +109,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
       <div className="product-card__content">
         <div className="product-card__category">
-          {category}
+          {/* {category} */}
+          <div>
+            <h3 className="product-card__title">{title}</h3>
+            <div className="product-card__details">
+              <div className="product-card__price">₹ {price}</div>
+            </div>
+          </div>
           {showOptions ? (
             <span
               className="product-card__collapse"
@@ -121,18 +125,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
               CLOSE&nbsp;<span style={{ fontWeight: 700 }}>-</span>
             </span>
           ) : (
-            <img
-              src={ASSETS.HEADER.BAG_ICON}
-              alt="Bag Icon"
-              className="product-card__bag-icon"
-              onClick={handleBagClick}
-              style={{ cursor: "pointer" }}
-            />
+            <span className="product-card__expand" onClick={handleBagClick}>
+              ADD TO CART&nbsp;<span style={{ fontWeight: 700 }}>+</span>
+            </span>
           )}
-        </div>
-        <h3 className="product-card__title">{title}</h3>
-        <div className="product-card__details">
-          <div className="product-card__price">₹ {price}</div>
         </div>
         <div
           className={`product-card__options-wrapper${

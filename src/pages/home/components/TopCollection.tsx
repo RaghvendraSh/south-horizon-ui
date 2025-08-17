@@ -56,7 +56,7 @@ const TopCollection = () => {
           <Swiper
             modules={[Navigation]}
             spaceBetween={30}
-            slidesPerView="auto"
+            slidesPerView={4}
             navigation={{
               prevEl: ".top-collection__nav-btn--prev",
               nextEl: ".top-collection__nav-btn--next",
@@ -67,12 +67,19 @@ const TopCollection = () => {
             }}
             breakpoints={{
               320: {
+                slidesPerView: 1,
                 spaceBetween: 20,
               },
               768: {
+                slidesPerView: 2,
                 spaceBetween: 25,
               },
               1024: {
+                slidesPerView: 3,
+                spaceBetween: 30,
+              },
+              1200: {
+                slidesPerView: 4,
                 spaceBetween: 30,
               },
             }}

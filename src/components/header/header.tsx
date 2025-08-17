@@ -365,11 +365,16 @@ const Header = () => {
     }
   };
 
-  // Handle Google Sign-In with redirect flow
-  const handleGoogleSignIn = (): void => {
-    console.log("Initiating Google Sign-In redirect...");
-    // Redirect to backend OAuth endpoint
-    window.location.href = "https://api.southhorizon.in/api/auth/google";
+  const handleGoogleSignIn = async () => {
+    try {
+      // Note: Google OAuth typically involves redirects or popup windows
+      // The actual user data would be handled by the OAuth callback
+      location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google`;
+      showToast("Google sign-in initiated", "success");
+    } catch (error) {
+      console.error("Google sign-in failed:", error);
+      showToast("Google sign-in failed. Please try again.", "error");
+    }
   };
 
   // Handle Google OAuth callback from backend

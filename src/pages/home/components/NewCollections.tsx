@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import ArrowRight from "../../../components/icons/ArrowRight";
-import ProductCard from "../../../components/ProductCard";
 import "../../../styles/pages/NewCollections.scss";
 import { getProductsWithFilters } from "../../../api";
 import type { Product } from "../../../interfaces/products";
@@ -20,6 +19,7 @@ const NewCollections = () => {
         // Use API filtering for better performance
         const response = await getProductsWithFilters({ isNew: true });
         const productsArray = normalizeProductsResponse(response);
+        console.log("Fetched new products:", productsArray);
         setProducts(productsArray);
       } catch (error) {
         console.error("Failed to fetch new products:", error);
@@ -29,11 +29,6 @@ const NewCollections = () => {
 
     fetchProducts();
   }, []);
-
-  const handleProductClick = (productId: string) => {
-    console.log("Product clicked:", productId);
-    // todo: Add your product click logic here (e.g., navigate to product page)
-  };
 
   const handleShopAll = () => {
     navigate(ROUTES.NEW_COLLECTIONS);
@@ -50,12 +45,29 @@ const NewCollections = () => {
               Collection
             </h2>
             <p className="new-collections__subtitle">Handpicked for you</p>
-            <button className="new-collections__cta" onClick={handleShopAll}>
-              <span>Shop All</span>
-              <div className="new-collections__arrow">
-                <ArrowRight color="currentColor" />
+            <div className="new-collections__actions">
+              <button className="new-collections__cta" onClick={handleShopAll}>
+                <span>Shop All</span>
+                <div className="new-collections__arrow">
+                  <ArrowRight color="currentColor" />
+                </div>
+              </button>
+
+              <div className="new-collections__navigation">
+                <button
+                  className="new-collections__nav-btn new-collections__nav-btn--prev"
+                  aria-label="Previous slide"
+                >
+                  <ArrowRight color="currentColor" />
+                </button>
+                <button
+                  className="new-collections__nav-btn new-collections__nav-btn--next"
+                  aria-label="Next slide"
+                >
+                  <ArrowRight color="currentColor" />
+                </button>
               </div>
-            </button>
+            </div>
           </div>
 
           <div className="new-collections__right">
@@ -87,7 +99,7 @@ const NewCollections = () => {
               >
                 {products.map((product) => (
                   <SwiperSlide key={product.id}>
-                    <ProductCard
+                    {/* <ProductCard
                       id={product.id}
                       title={product.name} // Corrected from 'title' to 'name'
                       price={product.price.toString()}
@@ -96,25 +108,11 @@ const NewCollections = () => {
                       availableColors={product.color}
                       availableSizes={product.size}
                       onClick={handleProductClick}
-                    />
+                    /> */}
+                    <img src={product.images?.[0] || "/placeholder-image.jpg"} alt="" className="preview-img" />
                   </SwiperSlide>
                 ))}
               </Swiper>
-
-              <div className="new-collections__navigation">
-                <button
-                  className="new-collections__nav-btn new-collections__nav-btn--prev"
-                  aria-label="Previous slide"
-                >
-                  <ArrowRight color="currentColor" />
-                </button>
-                <button
-                  className="new-collections__nav-btn new-collections__nav-btn--next"
-                  aria-label="Next slide"
-                >
-                  <ArrowRight color="currentColor" />
-                </button>
-              </div>
             </div>
           </div>
         </div>

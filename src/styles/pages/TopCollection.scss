@@ -117,16 +117,6 @@
 
     .swiper-slide {
       height: fit-content;
-      width: auto !important;
-      max-width: 300px;
-
-      @media (max-width: 768px) {
-        max-width: 250px;
-      }
-
-      @media (max-width: 480px) {
-        max-width: 200px;
-      }
     }
 
     // Ensure ProductCard takes full width within slide

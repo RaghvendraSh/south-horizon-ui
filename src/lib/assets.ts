@@ -14,6 +14,7 @@ import WARRANTY_PROTECTION_ICON from "../assets/images/home/WarrantyProtection.s
 import BOY_IMG from "../assets/images/products/boy.png";
 import MEN_IMG from "../assets/images/products/men.png";
 import WOMEN_IMG from "../assets/images/products/woemn.png";
+import BANNER_IMG from "../assets/images/home/Banner-Image.png";
 
 export const ASSETS = {
   HEADER: {
@@ -37,4 +38,5 @@ export const ASSETS = {
     WOMEN_IMG,
     BOY_IMG,
   },
+  BANNER_IMG,
 };

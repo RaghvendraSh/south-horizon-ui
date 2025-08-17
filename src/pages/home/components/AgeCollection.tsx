@@ -6,24 +6,14 @@ import type { Category } from "../../../interfaces/categories";
 import "../../../styles/pages/AgeCollection.scss";
 import { ASSETS } from "../../../lib/assets";
 
+const CategoryImgMapping: Record<string, string> = {
+  Men: ASSETS.PRODUCTS.MEN_IMG,
+  Women: ASSETS.PRODUCTS.WOMEN_IMG,
+  Kids: ASSETS.PRODUCTS.BOY_IMG,
+};
+
 const AgeCollection = () => {
-  const [categories, setCategories] = useState<Category[]>([
-    {
-      id: "men",
-      name: "SHOP FOR MEN",
-      image: ASSETS.PRODUCTS.MEN_IMG,
-    },
-    {
-      id: "women",
-      name: "SHOP FOR WOMEN",
-      image: ASSETS.PRODUCTS.WOMEN_IMG,
-    },
-    {
-      id: "kids",
-      name: "SHOP FOR KIDS",
-      image: ASSETS.PRODUCTS.BOY_IMG,
-    },
-  ]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,7 +43,7 @@ const AgeCollection = () => {
             <div key={category.id} className="age-collection__card">
               <div className="age-collection__image-container">
                 <img
-                  src={category.image}
+                  src={CategoryImgMapping[category.name]}
                   alt={category.name}
                   className="age-collection__image"
                   loading="lazy"
@@ -64,7 +54,7 @@ const AgeCollection = () => {
                   className="age-collection__cta"
                   onClick={() => handleCategoryClick(category.id)}
                 >
-                  <span>{category.name}</span>
+                  <span>SHOP FOR {category.name}</span>
                   <div className="age-collection__arrow">
                     <ArrowRight color="currentColor" />
                   </div>

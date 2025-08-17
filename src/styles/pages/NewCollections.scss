@@ -87,8 +87,8 @@
 
   &__content {
     display: flex;
-    gap: 4rem;
-    align-items: flex-start;
+    gap: 2rem;
+    align-items: stretch;
     width: 100%;
 
     @media (max-width: 1024px) {
@@ -99,7 +99,9 @@
 
   &__left {
     flex: 0 0 400px;
-    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     @media (max-width: 1024px) {
       flex: none;
@@ -115,6 +117,14 @@
     overflow: hidden;
     position: relative;
     max-width: 100%;
+  }
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // @media (min-width: 1024px) {
+    //   margin-top: 250px;
+    // }
   }
 
   &__title {
@@ -168,6 +178,7 @@
     border: 2px solid var(--text-primary);
     padding: 0.75rem 1.5rem;
     background: transparent;
+    height: 48px;
 
     &::after {
       content: "";
@@ -189,9 +200,6 @@
         transform: translateX(4px);
       }
     }
-    @media (min-width: 1024px) {
-      margin-top: 250px;
-    }
   }
 
   &__arrow {
@@ -207,7 +215,7 @@
 
   &__slider {
     overflow: visible;
-    padding: 1rem 0;
+    // padding: 1rem 0;
 
     .swiper-wrapper {
       align-items: stretch;
@@ -216,6 +224,10 @@
     .swiper-slide {
       height: fit-content;
       width: auto !important;
+    }
+    .preview-img {
+      width: 400px;
+      aspect-ratio: 1;
     }
   }
 
@@ -232,8 +244,8 @@
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    margin-top: 0.5rem;
-    padding-right: 2rem;
+    // margin-top: 0.5rem;
+    // padding-right: 2rem;
 
     @media (max-width: 1024px) {
       justify-content: center;
@@ -246,8 +258,8 @@
   }
 
   &__nav-btn {
-    width: 40px;
-    height: 40px;
+    height: 48px;
+    aspect-ratio: 1;
     // border-radius: 8px;
     border: 2px solid var(--text-primary);
     background: white;

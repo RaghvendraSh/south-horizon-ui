@@ -1,8 +1,10 @@
 @use "../abstracts" as *;
 
 .features-section {
-  padding: 3rem 0 0;
-  background: transparent;
+  width: 100%;
+  margin: 2rem auto 0;
+  padding: 3rem;
+  background-color: #f0f6fe;
   &__container {
     max-width: 100%;
     margin: 0 auto;
